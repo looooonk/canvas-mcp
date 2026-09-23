@@ -83,3 +83,60 @@ def test_canvas_file_domain_redirect_retains_preview_without_auth():
         "1",
     )
     assert "preview=1" in url and not auth
+
+
+def test_shard_prefixed_file_redirect_forces_preview():
+    url, auth = download_url(
+        "https://a123.cluster377.canvas-user-content.com/files/100~1/download?sf_verifier=signed",
+        BASE,
+        "1",
+    )
+    assert "preview=1" in url and not auth
+
+
+async def test_download_redirects_strip_token_and_keep_preview(monkeypatch):
+    import httpx
+
+    from canvas_mcp.client import CanvasClient
+    from canvas_mcp.config import Settings
+    from canvas_mcp.files import read_file
+
+    seen = []
+
+    async def metadata(operation, path):
+        return {"data": {"url": BASE + "/files/1/download?verifier=abc", "size": 4}}
+
+    def handler(request):
+        seen.append(request)
+        if len(seen) == 1:
+            assert request.headers["authorization"] == "Bearer private-token"
+            assert request.url.params["preview"] == "1"
+            return httpx.Response(
+                302,
+                headers={
+                    "location": "https://a123.cluster377.canvas-user-content.com/files/100~1/download?sf_verifier=signed",
+                    "set-cookie": "private_cookie=secret",
+                },
+            )
+        assert "authorization" not in request.headers
+        assert "cookie" not in request.headers
+        if len(seen) == 2:
+            assert request.url.params["preview"] == "1"
+            return httpx.Response(
+                302,
+                headers={
+                    "location": "https://inst-fs-iad-prod.inscloudgate.net/files/content?token=signed",
+                },
+            )
+        return httpx.Response(200, content=b"text")
+
+    original = httpx.AsyncClient
+    client = CanvasClient(Settings(BASE, "private-token"))
+    monkeypatch.setattr(client, "read", metadata)
+    monkeypatch.setattr(
+        "canvas_mcp.files.httpx.AsyncClient",
+        lambda **kwargs: original(**kwargs, transport=httpx.MockTransport(handler)),
+    )
+    _, body = await read_file(client, "1")
+    assert body == b"text" and len(seen) == 3
+    await client.close()

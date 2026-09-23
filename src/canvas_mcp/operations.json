@@ -228,7 +228,8 @@
     "path": "/api/v1/courses/{course_id}/users/{user_id}/progress",
     "summary": "Get user progress",
     "query": {},
-    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/courses#method.courses.user_progress"
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/courses#method.courses.user_progress",
+    "notes": "Use user_id=\"self\". HTTP 400 can mean the course lacks modules with completion requirements, or the caller is not a student in the course."
   },
   "course_users": {
     "category": "courses",

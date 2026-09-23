@@ -151,6 +151,7 @@ async def test_errors_do_not_expose_response_body_or_follow_redirects(status):
     with pytest.raises(CanvasError) as error:
         await client.read("courses")
     assert TOKEN not in str(error.value)
+    assert error.value.http_status == status
     assert len(seen) == 1
     await client.close()
 

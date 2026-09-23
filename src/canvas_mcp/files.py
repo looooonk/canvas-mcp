@@ -79,7 +79,11 @@ async def read_file(client: CanvasClient, file_id: str) -> tuple[dict, bytes]:
                         http.cookies.clear()
                         continue
                     if response.status_code != 200:
-                        raise CanvasError(f"File download returned HTTP {response.status_code}.")
+                        raise CanvasError(
+                            f"File download returned HTTP {response.status_code}.",
+                            code="file_http_error",
+                            http_status=response.status_code,
+                        )
                     body = bytearray()
                     async for chunk in response.aiter_bytes():
                         body.extend(chunk)

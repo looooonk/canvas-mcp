@@ -43,6 +43,7 @@ class CanvasClient:
                             await asyncio.sleep(delay)
                             continue
                         messages = {
+                            400: "Canvas rejected parameters or the operation is not applicable.",
                             401: "Canvas authentication failed. Check the local API token.",
                             403: "Canvas denied access. Feature may be unavailable to students.",
                             404: "Canvas resource not found or not available to this account.",
@@ -53,7 +54,9 @@ class CanvasClient:
                                 messages.get(
                                     response.status_code,
                                     f"Canvas HTTP {response.status_code}; redirects blocked.",
-                                )
+                                ),
+                                code="http_error",
+                                http_status=response.status_code,
                             )
                         if "json" not in response.headers.get("content-type", "").lower():
                             raise CanvasError(
@@ -79,7 +82,8 @@ class CanvasClient:
                 except httpx.RequestError:
                     if attempt == 2:
                         raise CanvasError(
-                            "Cannot reach Canvas securely. Check your connection and URL."
+                            "Cannot reach Canvas securely. Check your connection and URL.",
+                            code="connection_error",
                         ) from None
                     await asyncio.sleep(0.5 * 2**attempt)
         raise CanvasError("Canvas request failed.")

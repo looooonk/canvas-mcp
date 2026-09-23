@@ -232,9 +232,11 @@ def main():
     logging.getLogger("pypdf").setLevel(logging.ERROR)
     try:
         settings = Settings.load(args.env_file)
-    except ValueError as error:
+    except Exception as error:
         ErrorLog(log_dir).record("startup_failure", error)
-        parser.error(str(error))
+        parser.error(
+            str(error) if isinstance(error, ValueError) else "Cannot load local configuration."
+        )
     try:
         create_server(settings, log_dir).run(transport="stdio")
     except Exception as error:
