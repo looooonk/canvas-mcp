@@ -196,3 +196,17 @@ def test_missing_required_query_and_wrong_scalar_types():
         query_for("announcements", {"context_codes[]": "course_1"})
     with pytest.raises(CanvasError):
         query_for("calendar_events", {"all_events": "maybe"})
+
+
+async def test_compressed_canvas_response_is_decoded_once():
+    import gzip
+
+    client = make_client(
+        lambda _: httpx.Response(
+            200,
+            content=gzip.compress(b'[{"id":"123"}]'),
+            headers={"content-type": "application/json", "content-encoding": "gzip"},
+        )
+    )
+    assert (await client.read("courses"))["data"] == [{"id": "123"}]
+    await client.close()

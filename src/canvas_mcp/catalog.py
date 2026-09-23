@@ -9,6 +9,11 @@ OPERATIONS = json.loads(files("canvas_mcp").joinpath("operations.json").read_tex
 class CanvasError(ValueError):
     """A safe, actionable error that may be shown to an MCP client."""
 
+    def __init__(self, message: str, *, code="canvas_error", http_status=None):
+        super().__init__(message)
+        self.code = code
+        self.http_status = http_status
+
 
 def operation(name: str) -> dict:
     if name not in OPERATIONS:

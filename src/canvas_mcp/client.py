@@ -68,7 +68,11 @@ class CanvasClient:
                                 )
                         return httpx.Response(
                             response.status_code,
-                            headers=response.headers,
+                            headers={
+                                k: v
+                                for k, v in response.headers.items()
+                                if k not in {"content-encoding", "content-length"}
+                            },
                             content=bytes(body),
                             request=response.request,
                         )
