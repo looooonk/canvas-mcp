@@ -1,0 +1,2484 @@
+{
+  "profile": {
+    "category": "users",
+    "path": "/api/v1/users/{user_id}/profile",
+    "summary": "Get user profile",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of additional information to include. \"links\":: include the user's profile links in the response as an array of objects with +url+ and +title+ fields \"user_services\":: include names and links for the user's connected services \"uuid\":: include the user's uuid in the response Allowed values: links , user_services , uuid"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/users#method.profile.settings",
+    "notes": "Use user_id=\"self\" for the authenticated student, including their time_zone."
+  },
+  "user": {
+    "category": "users",
+    "path": "/api/v1/users/{id}",
+    "summary": "Show user details",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of additional information to include on the user record. \"locale\", \"avatar_url\", \"permissions\", \"email\", and \"effective_locale\" will always be returned Allowed values: uuid , last_login"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/users#method.users.api_show"
+  },
+  "activity_stream": {
+    "category": "users",
+    "path": "/api/v1/users/self/activity_stream",
+    "summary": "List the activity stream",
+    "query": {
+      "only_active_courses": {
+        "type": "boolean",
+        "required": false,
+        "description": "If true, will only return objects for courses the user is actively participating in"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/users#method.users.activity_stream"
+  },
+  "activity_summary": {
+    "category": "users",
+    "path": "/api/v1/users/self/activity_stream/summary",
+    "summary": "Activity stream summary",
+    "query": {
+      "only_active_courses": {
+        "type": "boolean",
+        "required": false,
+        "description": "If true, will only return objects for courses the user is actively participating in"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/users#method.users.activity_stream_summary"
+  },
+  "todo": {
+    "category": "users",
+    "path": "/api/v1/users/self/todo",
+    "summary": "List the TODO items",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "\"ungraded_quizzes\":: Optionally include ungraded quizzes (such as practice quizzes and surveys) in the list. These will be returned under a +quiz+ key instead of an +assignment+ key in response elements. \"grading_counts\":: Optionally include segmented submission counts on grading-type items: +on_time_needs_grading_count+, +late_needs_grading_count+, +resubmitted_needs_grading_count+, +submitted_submissions_count+, and +total_submissions_count+. Only honored when the account has the +educator_dashboard+ feature enabled; otherwise silently ignored. Allowed values: ungraded_quizzes , grading_counts"
+      },
+      "course_ids[]": {
+        "type": "string",
+        "required": false,
+        "description": "Restrict results to todo items in the given courses. Accepts numeric IDs and SIS IDs of the form +sis_course_id:foo+. Applies to grading, submitting, checkpoint, and ungraded quiz items alike. Courses the user is not enrolled in (or that cannot be resolved) are silently dropped. When the parameter is present but no valid courses resolve, an empty list is returned rather than the unfiltered list."
+      },
+      "submission_status[]": {
+        "type": "string",
+        "required": false,
+        "description": "Restrict grading todo items to submissions matching the given characteristics. Values OR-combine. When present, only grading (and checkpoint grading) items are returned; submitting and ungraded-quiz items are omitted. \"late\":: Turned in after the due date. \"resubmitted\":: Student resubmitted after grading; the grade no longer matches the current submission. Unknown values are silently dropped. When the parameter is present but no valid statuses resolve, grading items return empty rather than unfiltered. Allowed values: late , resubmitted"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/users#method.users.todo_items"
+  },
+  "todo_count": {
+    "category": "users",
+    "path": "/api/v1/users/self/todo_item_count",
+    "summary": "List counts for todo items",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "\"ungraded_quizzes\":: Optionally include ungraded quizzes (such as practice quizzes and surveys) in the list. These will be returned under a +quiz+ key instead of an +assignment+ key in response elements. Allowed values: ungraded_quizzes"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/users#method.users.todo_item_count"
+  },
+  "upcoming_events": {
+    "category": "users",
+    "path": "/api/v1/users/self/upcoming_events",
+    "summary": "List upcoming assignments, calendar events",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/users#method.users.upcoming_events"
+  },
+  "missing_submissions": {
+    "category": "users",
+    "path": "/api/v1/users/{user_id}/missing_submissions",
+    "summary": "List Missing Submissions",
+    "query": {
+      "user_id": {
+        "type": "string",
+        "required": false,
+        "description": "the student's ID"
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "\"planner_overrides\":: Optionally include the assignment's associated planner override, if it exists, for the current user. These will be returned under a +planner_override+ key \"course\":: Optionally include the assignments' courses Allowed values: planner_overrides , course"
+      },
+      "filter[]": {
+        "type": "string",
+        "required": false,
+        "description": "\"submittable\":: Only return assignments that the current user can submit (i.e. filter out locked assignments) \"current_grading_period\":: Only return missing assignments that are in the current grading period Allowed values: submittable , current_grading_period"
+      },
+      "course_ids[]": {
+        "type": "string",
+        "required": false,
+        "description": "Optionally restricts the list of past-due assignments to only those associated with the specified course IDs. Required if observed_user_id is passed."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/users#method.users.missing_submissions"
+  },
+  "graded_submissions": {
+    "category": "users",
+    "path": "/api/v1/users/{id}/graded_submissions",
+    "summary": "Get a users most recently graded submissions",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Associations to include with the group Allowed values: `assignment`"
+      },
+      "only_current_enrollments": {
+        "type": "boolean",
+        "required": false,
+        "description": "Returns submissions for only currently active enrollments"
+      },
+      "only_published_assignments": {
+        "type": "boolean",
+        "required": false,
+        "description": "Returns submissions for only published assignments"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/users#method.users.user_graded_submissions"
+  },
+  "course_nicknames": {
+    "category": "users",
+    "path": "/api/v1/users/self/course_nicknames",
+    "summary": "List course nicknames",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/users#method.course_nicknames.index"
+  },
+  "user_colors": {
+    "category": "users",
+    "path": "/api/v1/users/{id}/colors",
+    "summary": "Get custom colors",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/users#method.users.get_custom_colors"
+  },
+  "courses": {
+    "category": "courses",
+    "path": "/api/v1/courses",
+    "summary": "List your courses",
+    "query": {
+      "enrollment_type": {
+        "type": "string",
+        "required": false,
+        "description": "When set, only return courses where the user is enrolled as this type. For example, set to \"teacher\" to return only courses where the user is enrolled as a Teacher. This argument is ignored if enrollment_role is given. Allowed values: teacher , student , ta , observer , designer"
+      },
+      "enrollment_role": {
+        "type": "string",
+        "required": false,
+        "description": "Deprecated When set, only return courses where the user is enrolled with the specified course-level role. This can be a role created with the Add Role API or a base role type of 'StudentEnrollment', 'TeacherEnrollment', 'TaEnrollment', 'ObserverEnrollment', or 'DesignerEnrollment'."
+      },
+      "enrollment_role_id": {
+        "type": "integer",
+        "required": false,
+        "description": "When set, only return courses where the user is enrolled with the specified course-level role. This can be a role created with the Add Role API or a built_in role type of 'StudentEnrollment', 'TeacherEnrollment', 'TaEnrollment', 'ObserverEnrollment', or 'DesignerEnrollment'."
+      },
+      "enrollment_state": {
+        "type": "string",
+        "required": false,
+        "description": "When set, only return courses where the user has an enrollment with the given state. This will respect section/course/term date overrides. Allowed values: active , invited_or_pending , completed"
+      },
+      "exclude_blueprint_courses": {
+        "type": "boolean",
+        "required": false,
+        "description": "When set, only return courses that are not configured as blueprint courses."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"needs_grading_count\": Optional information to include with each Course. When needs_grading_count is given, and the current user has grading rights, the total number of submissions needing grading for all assignments is returned. - \"syllabus_body\": Optional information to include with each Course. When syllabus_body is given the user-generated html for the course syllabus is returned. - \"public_description\": Optional information to include with each Course. When public_description is given the user-generated text for the course public description is returned. - \"total_scores\": Optional information to include with each Course. When total_scores is given, any student enrollments will also include the fields 'computed_current_score', 'computed_final_score', 'computed_current_grade', and 'computed_final_grade', as well as (if the user has permission) 'unposted_current_score', 'unposted_final_score', 'unposted_current_grade', and 'unposted_final_grade' (see Enrollment documentation for more information on these fields). This argument is ignored if the course is configured to hide final grades. - \"current_grading_period_scores\": Optional information to include with each Course. When current_grading_period_scores is given and total_scores is given, any student enrollments will also include the fields 'has_grading_periods', 'totals_for_all_grading_periods_option', 'current_grading_period_title', 'current_grading_period_id', current_period_computed_current_score', 'current_period_computed_final_score', 'current_period_computed_current_grade', and 'current_period_computed_final_grade', as well as (if the user has permission) 'current_period_unposted_current_score', 'current_period_unposted_final_score', 'current_period_unposted_current_grade', and 'current_period_unposted_final_grade' (see Enrollment documentation for more information on these fields). In addition, when this argument is passed, the course will have a 'has_grading_periods' attribute on it. This argument is ignored if the total_scores argument is not included. If the course is configured to hide final grades, the following fields are not returned: 'totals_for_all_grading_periods_option', 'current_period_computed_current_score', 'current_period_computed_final_score', 'current_period_computed_current_grade', 'current_period_computed_final_grade', 'current_period_unposted_current_score', 'current_period_unposted_final_score', 'current_period_unposted_current_grade', and 'current_period_unposted_final_grade' - \"grading_periods\": Optional information to include with each Course. When grading_periods is given, a list of the grading periods associated with each course is returned. - \"term\": Optional information to include with each Course. When term is given, the information for the enrollment term for each course is returned. - \"account\": Optional information to include with each Course. When account is given, the account json for each course is returned. - \"course_progress\": Optional information to include with each Course. When course_progress is given, each course will include a 'course_progress' object with the fields: 'requirement_count', an integer specifying the total number of requirements in the course, 'requirement_completed_count', an integer specifying the total number of requirements in this course that have been completed, and 'next_requirement_url', a string url to the next requirement item, and 'completed_at', the date the course was completed (null if incomplete). 'next_requirement_url' will be null if all requirements have been completed or the current module does not require sequential progress. \"course_progress\" will return an error message if the course is not module based or the user is not enrolled as a student in the course. - \"sections\": Section enrollment information to include with each Course. Returns an array of hashes containing the section ID (id), section name (name), start and end dates (start_at, end_at), as well as the enrollment type (enrollment_role, e.g. 'StudentEnrollment'). - \"storage_quota_used_mb\": The amount of storage space used by the files in this course - \"total_students\": Optional information to include with each Course. Returns an integer for the total amount of active and invited students. - \"passback_status\": Include the grade passback_status - \"favorites\": Optional information to include with each Course. Indicates if the user has marked the course as a favorite course. - \"teachers\": Teacher information to include with each Course. Returns an array of hashes containing the UserDisplay information for each teacher in the course. - \"observed_users\": Optional information to include with each Course. Will include data for observed users if the current user has an observer enrollment. - \"tabs\": Optional information to include with each Course. Will include the list of tabs configured for each course. See the List available tabs API for more information. - \"course_image\": Optional information to include with each Course. Returns course image url if a course image has been set. - \"banner_image\": Optional information to include with each Course. Returns course banner image url if the course is a Canvas for Elementary subject and a banner image has been set. - \"concluded\": Optional information to include with each Course. Indicates whether the course has been concluded, taking course and term dates into account. - \"post_manually\": Optional information to include with each Course. Returns true if the course post policy is set to Manually post grades. Returns false if the the course post policy is set to Automatically post grades. - \"syllabus_versions\": Optional information to include with each Course. Returns recent saved versions of the syllabus body. Requires the syllabus_versioning feature flag and permission to manage course content. Version numbers can be passed to the Restore course syllabus version API. Allowed values: needs_grading_count , syllabus_body , syllabus_versions , public_description , total_scores , current_grading_period_scores , grading_periods , term , account , course_progress , sections , storage_quota_used_mb , total_students , passback_status , favorites , teachers , observed_users , course_image , banner_image , concluded , post_manually"
+      },
+      "state[]": {
+        "type": "string",
+        "required": false,
+        "description": "If set, only return courses that are in the given state(s). By default, \"available\" is returned for students and observers, and anything except \"deleted\", for all other enrollment types Allowed values: unpublished , available , completed , deleted"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/courses#method.courses.index",
+    "notes": "Use enrollment_state=\"active\" to find current enrollments; include[]=term,total_scores for terms and grades. Follow every next_cursor before claiming a complete list."
+  },
+  "course": {
+    "category": "courses",
+    "path": "/api/v1/courses/{id}",
+    "summary": "Get a single course",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"all_courses\": Also search recently deleted courses. - \"permissions\": Include permissions the current user has for the course. - \"observed_users\": Include observed users in the enrollments - \"course_image\": Include course image url if a course image has been set - \"banner_image\": Include course banner image url if the course is a Canvas for Elementary subject and a banner image has been set - \"concluded\": Optional information to include with Course. Indicates whether the course has been concluded, taking course and term dates into account. - \"lti_context_id\": Include course LTI tool id. - \"post_manually\": Include course post policy. If the post policy is manually post grades, the value will be true. If the post policy is automatically post grades, the value will be false. - \"syllabus_versions\": Optional information to include with each Course. Returns recent saved versions of the syllabus body. Requires the syllabus_versioning feature flag and permission to manage course content. Version numbers can be passed to the Restore course syllabus version API. Allowed values: needs_grading_count , syllabus_body , syllabus_versions , public_description , total_scores , current_grading_period_scores , term , account , course_progress , sections , storage_quota_used_mb , total_students , passback_status , favorites , teachers , observed_users , all_courses , permissions , course_image , banner_image , concluded , lti_context_id , post_manually"
+      },
+      "teacher_limit": {
+        "type": "integer",
+        "required": false,
+        "description": "The maximum number of teacher enrollments to show. If the course contains more teachers than this, instead of giving the teacher enrollments, the count of teachers will be given under a teacher_count key."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/courses#method.courses.show",
+    "notes": "Include syllabus_body, term, total_scores, and course_image as needed. Grades may be hidden or null; never treat null as zero."
+  },
+  "course_progress": {
+    "category": "courses",
+    "path": "/api/v1/courses/{course_id}/users/{user_id}/progress",
+    "summary": "Get user progress",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/courses#method.courses.user_progress"
+  },
+  "course_users": {
+    "category": "courses",
+    "path": "/api/v1/courses/{course_id}/users",
+    "summary": "List users in course",
+    "query": {
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial name or full ID of the users to match and return in the results list."
+      },
+      "sort": {
+        "type": "string",
+        "required": false,
+        "description": "When set, sort the results of the search based on the given field. Allowed values: `username`, `last_login`, `email`, `sis_id`"
+      },
+      "enrollment_type[]": {
+        "type": "string",
+        "required": false,
+        "description": "When set, only return users where the user is enrolled as this type. \"student_view\" implies include[]=test_student. This argument is ignored if enrollment_role is given. Allowed values: teacher , student , student_view , ta , observer , designer"
+      },
+      "enrollment_role": {
+        "type": "string",
+        "required": false,
+        "description": "Deprecated When set, only return users enrolled with the specified course-level role. This can be a role created with the Add Role API or a base role type of 'StudentEnrollment', 'TeacherEnrollment', 'TaEnrollment', 'ObserverEnrollment', or 'DesignerEnrollment'."
+      },
+      "enrollment_role_id": {
+        "type": "integer",
+        "required": false,
+        "description": "When set, only return courses where the user is enrolled with the specified course-level role. This can be a role created with the Add Role API or a built_in role id with type 'StudentEnrollment', 'TeacherEnrollment', 'TaEnrollment', 'ObserverEnrollment', or 'DesignerEnrollment'."
+      },
+      "section_ids[]": {
+        "type": "integer",
+        "required": false,
+        "description": "When set, only return users who are enrolled in the given section(s)."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"enrollments\": Optionally include with each Course the user's current and invited enrollments. If the user is enrolled as a student, and the account has permission to manage or view all grades, each enrollment will include a 'grades' key with 'current_score', 'final_score', 'current_grade' and 'final_grade' values. - \"locked\": Optionally include whether an enrollment is locked. - \"avatar_url\": Optionally include avatar_url. - \"bio\": Optionally include each user's bio. - \"test_student\": Optionally include the course's Test Student, if present. Default is to not include Test Student. - \"custom_links\": Optionally include plugin-supplied custom links for each student, such as analytics information - \"current_grading_period_scores\": if enrollments is included as well as this directive, the scores returned in the enrollment will be for the current grading period if there is one. A 'grading_period_id' value will also be included with the scores. if grading_period_id is nil there is no current grading period and the score is a total score. - \"uuid\": Optionally include the users uuid Allowed values: enrollments , locked , avatar_url , test_student , bio , custom_links , current_grading_period_scores , uuid"
+      },
+      "user_id": {
+        "type": "string",
+        "required": false,
+        "description": "If this parameter is given and it corresponds to a user in the course, the +page+ parameter will be ignored and the page containing the specified user will be returned instead."
+      },
+      "user_ids[]": {
+        "type": "integer",
+        "required": false,
+        "description": "If included, the course users set will only include users with IDs specified by the param. Note: this will not work in conjunction with the \"user_id\" argument but multiple user_ids can be included."
+      },
+      "enrollment_state[]": {
+        "type": "string",
+        "required": false,
+        "description": "When set, only return users where the enrollment workflow state is of one of the given types. \"active\" and \"invited\" enrollments are returned by default. Allowed values: active , invited , rejected , completed , inactive"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/courses#method.courses.users"
+  },
+  "course_user": {
+    "category": "courses",
+    "path": "/api/v1/courses/{course_id}/users/{id}",
+    "summary": "Get single user",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/courses#method.courses.user"
+  },
+  "course_activity": {
+    "category": "courses",
+    "path": "/api/v1/courses/{course_id}/activity_stream",
+    "summary": "Course activity stream",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/courses#method.courses.activity_stream"
+  },
+  "course_activity_summary": {
+    "category": "courses",
+    "path": "/api/v1/courses/{course_id}/activity_stream/summary",
+    "summary": "Course activity stream summary",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/courses#method.courses.activity_stream_summary"
+  },
+  "course_todo": {
+    "category": "courses",
+    "path": "/api/v1/courses/{course_id}/todo",
+    "summary": "Course TODO items",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/courses#method.courses.todo_items"
+  },
+  "course_settings": {
+    "category": "courses",
+    "path": "/api/v1/courses/{course_id}/settings",
+    "summary": "Get course settings",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/courses#method.courses.api_settings"
+  },
+  "course_permissions": {
+    "category": "courses",
+    "path": "/api/v1/courses/{course_id}/permissions",
+    "summary": "Permissions",
+    "query": {
+      "permissions[]": {
+        "type": "string",
+        "required": false,
+        "description": "List of permissions to check against the authenticated user. Permission names are documented in the List assignable permissions endpoint."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/courses#method.courses.permissions"
+  },
+  "assignments": {
+    "category": "assignments",
+    "path": "/api/v1/courses/{course_id}/assignments",
+    "summary": "List assignments",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Optional information to include with each assignment: submission:: The current user's current +Submission+ assignment_visibility:: An array of ids of students who can see the assignment all_dates:: An array of +AssignmentDate+ structures, one for each override, and also a +base+ if the assignment has an \"Everyone\" / \"Everyone Else\" date overrides:: An array of +AssignmentOverride+ structures observed_users:: An array of submissions for observed users can_edit:: an extra Boolean value will be included with each +Assignment+ (and +AssignmentDate+ if +all_dates+ is supplied) to indicate whether the caller can edit the assignment or date. Moderated grading and closed grading periods may restrict a user's ability to edit an assignment. score_statistics:: An object containing min, max, and mean score on this assignment. This will not be included for students if there are less than 5 graded assignments or if disabled by the instructor. Only valid if 'submission' is also included. ab_guid:: An array of guid strings for academic benchmarks Allowed values: submission , assignment_visibility , all_dates , overrides , observed_users , can_edit , score_statistics , ab_guid"
+      },
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial title of the assignments to match and return."
+      },
+      "override_assignment_dates": {
+        "type": "boolean",
+        "required": false,
+        "description": "Apply assignment overrides for each assignment, defaults to true."
+      },
+      "needs_grading_count_by_section": {
+        "type": "boolean",
+        "required": false,
+        "description": "Split up \"needs_grading_count\" by sections into the \"needs_grading_count_by_section\" key, defaults to false"
+      },
+      "bucket": {
+        "type": "string",
+        "required": false,
+        "description": "If included, only return certain assignments depending on due date and submission status. Allowed values: `past`, `overdue`, `undated`, `ungraded`, `unsubmitted`, `upcoming`, `future`"
+      },
+      "assignment_ids[]": {
+        "type": "string",
+        "required": false,
+        "description": "if set, return only assignments specified"
+      },
+      "order_by": {
+        "type": "string",
+        "required": false,
+        "description": "Determines the order of the assignments. Defaults to \"position\". Allowed values: `position`, `name`, `due_at`"
+      },
+      "new_quizzes": {
+        "type": "boolean",
+        "required": false,
+        "description": "Return only New Quizzes assignments"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/assignments#method.assignments_api.index"
+  },
+  "assignment": {
+    "category": "assignments",
+    "path": "/api/v1/courses/{course_id}/assignments/{id}",
+    "summary": "Get a single assignment",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Associations to include with the assignment. The \"assignment_visibility\" option requires that the Differentiated Assignments course feature be turned on. If \"observed_users\" is passed, submissions for observed users will also be included. For \"score_statistics\" to be included, the \"submission\" option must also be set. The \"peer_review\" option returns peer review sub assignment data if it exists, regardless of the Peer Review Allocation and Grading feature state. If no peer review sub assignment exists, the feature must be enabled to receive a null value; otherwise the key is omitted. The \"academic_integrity_pledge\" option returns the account-level academic integrity pledge text a student must accept before submitting this assignment. The key is only present when the pledge is enabled for the account; when present but the pledge does not apply to this assignment (e.g. external tool assignments or Canvas Career courses) the value is null. Allowed values: submission , assignment_visibility , overrides , observed_users , can_edit , score_statistics , ab_guid , peer_review , academic_integrity_pledge"
+      },
+      "override_assignment_dates": {
+        "type": "boolean",
+        "required": false,
+        "description": "Apply assignment overrides to the assignment, defaults to true."
+      },
+      "needs_grading_count_by_section": {
+        "type": "boolean",
+        "required": false,
+        "description": "Split up \"needs_grading_count\" by sections into the \"needs_grading_count_by_section\" key, defaults to false"
+      },
+      "all_dates": {
+        "type": "boolean",
+        "required": false,
+        "description": "All dates associated with the assignment, if applicable"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/assignments#method.assignments_api.show"
+  },
+  "group_assignments": {
+    "category": "assignments",
+    "path": "/api/v1/courses/{course_id}/assignment_groups/{assignment_group_id}/assignments",
+    "summary": "List assignments",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Optional information to include with each assignment: submission:: The current user's current +Submission+ assignment_visibility:: An array of ids of students who can see the assignment all_dates:: An array of +AssignmentDate+ structures, one for each override, and also a +base+ if the assignment has an \"Everyone\" / \"Everyone Else\" date overrides:: An array of +AssignmentOverride+ structures observed_users:: An array of submissions for observed users can_edit:: an extra Boolean value will be included with each +Assignment+ (and +AssignmentDate+ if +all_dates+ is supplied) to indicate whether the caller can edit the assignment or date. Moderated grading and closed grading periods may restrict a user's ability to edit an assignment. score_statistics:: An object containing min, max, and mean score on this assignment. This will not be included for students if there are less than 5 graded assignments or if disabled by the instructor. Only valid if 'submission' is also included. ab_guid:: An array of guid strings for academic benchmarks Allowed values: submission , assignment_visibility , all_dates , overrides , observed_users , can_edit , score_statistics , ab_guid"
+      },
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial title of the assignments to match and return."
+      },
+      "override_assignment_dates": {
+        "type": "boolean",
+        "required": false,
+        "description": "Apply assignment overrides for each assignment, defaults to true."
+      },
+      "needs_grading_count_by_section": {
+        "type": "boolean",
+        "required": false,
+        "description": "Split up \"needs_grading_count\" by sections into the \"needs_grading_count_by_section\" key, defaults to false"
+      },
+      "bucket": {
+        "type": "string",
+        "required": false,
+        "description": "If included, only return certain assignments depending on due date and submission status. Allowed values: `past`, `overdue`, `undated`, `ungraded`, `unsubmitted`, `upcoming`, `future`"
+      },
+      "assignment_ids[]": {
+        "type": "string",
+        "required": false,
+        "description": "if set, return only assignments specified"
+      },
+      "order_by": {
+        "type": "string",
+        "required": false,
+        "description": "Determines the order of the assignments. Defaults to \"position\". Allowed values: `position`, `name`, `due_at`"
+      },
+      "new_quizzes": {
+        "type": "boolean",
+        "required": false,
+        "description": "Return only New Quizzes assignments"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/assignments#method.assignments_api.index"
+  },
+  "assignment_overrides": {
+    "category": "assignments",
+    "path": "/api/v1/courses/{course_id}/assignments/{assignment_id}/overrides",
+    "summary": "List assignment overrides",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/assignments#method.assignment_overrides.index"
+  },
+  "assignment_override": {
+    "category": "assignments",
+    "path": "/api/v1/courses/{course_id}/assignments/{assignment_id}/overrides/{id}",
+    "summary": "Get a single assignment override",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/assignments#method.assignment_overrides.show"
+  },
+  "assignment_group_members": {
+    "category": "assignments",
+    "path": "/api/v1/courses/{course_id}/assignments/{assignment_id}/users/{user_id}/group_members",
+    "summary": "List group members for a student on an assignment",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/assignments#method.assignments_api.student_group_members"
+  },
+  "assignment_groups": {
+    "category": "assignment_groups",
+    "path": "/api/v1/courses/{course_id}/assignment_groups",
+    "summary": "List assignment groups",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Associations to include with the group. \"discussion_topic\", \"all_dates\", \"can_edit\", \"assignment_visibility\" & \"submission\" are only valid if \"assignments\" is also included. \"score_statistics\" requires that the \"assignments\" and \"submission\" options are included. The \"assignment_visibility\" option additionally requires that the Differentiated Assignments course feature be turned on. If \"observed_users\" is passed along with \"assignments\" and \"submission\", submissions for observed users will also be included as an array. The \"peer_review\" option requires that the Peer Review Grading course feature be turned on and that \"assignments\" is included. Allowed values: assignments , discussion_topic , all_dates , assignment_visibility , overrides , submission , observed_users , can_edit , score_statistics , peer_review"
+      },
+      "assignment_ids[]": {
+        "type": "string",
+        "required": false,
+        "description": "If \"assignments\" are included, optionally return only assignments having their ID in this array. This argument may also be passed as a comma separated string."
+      },
+      "exclude_assignment_submission_types[]": {
+        "type": "string",
+        "required": false,
+        "description": "If \"assignments\" are included, those with the specified submission types will be excluded from the assignment groups. Allowed values: online_quiz , discussion_topic , wiki_page , external_tool"
+      },
+      "override_assignment_dates": {
+        "type": "boolean",
+        "required": false,
+        "description": "Apply assignment overrides for each assignment, defaults to true."
+      },
+      "grading_period_id": {
+        "type": "integer",
+        "required": false,
+        "description": "The id of the grading period in which assignment groups are being requested (Requires grading periods to exist.)"
+      },
+      "scope_assignments_to_student": {
+        "type": "boolean",
+        "required": false,
+        "description": "If true, all assignments returned will apply to the current user in the specified grading period. If assignments apply to other students in the specified grading period, but not the current user, they will not be returned. (Requires the grading_period_id argument and grading periods to exist. In addition, the current user must be a student.)"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/assignment_groups#method.assignment_groups.index"
+  },
+  "assignment_group": {
+    "category": "assignment_groups",
+    "path": "/api/v1/courses/{course_id}/assignment_groups/{assignment_group_id}",
+    "summary": "Get an Assignment Group",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Associations to include with the group. \"discussion_topic\" and \"assignment_visibility\" and \"submission\" are only valid if \"assignments\" is also included. \"score_statistics\" is only valid if \"submission\" and \"assignments\" are also included. The \"assignment_visibility\" option additionally requires that the Differentiated Assignments course feature be turned on. Allowed values: assignments , discussion_topic , assignment_visibility , submission , score_statistics"
+      },
+      "override_assignment_dates": {
+        "type": "boolean",
+        "required": false,
+        "description": "Apply assignment overrides for each assignment, defaults to true."
+      },
+      "grading_period_id": {
+        "type": "integer",
+        "required": false,
+        "description": "The id of the grading period in which assignment groups are being requested (Requires grading periods to exist on the account)"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/assignment_groups#method.assignment_groups_api.show"
+  },
+  "submission": {
+    "category": "submissions",
+    "path": "/api/v1/courses/{course_id}/assignments/{assignment_id}/submissions/{user_id}",
+    "summary": "Get a single submission",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Associations to include with the group. Allowed values: `submission_history`, `submission_comments`, `submission_html_comments`, `rubric_assessment`, `full_rubric_assessment`, `visibility`, `course`, `user`, `read_status`, `student_entered_score`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/submissions#method.submissions_api.show",
+    "notes": "Use user_id=\"self\". Include submission_comments, submission_history, rubric_assessment for feedback and grades."
+  },
+  "student_submissions": {
+    "category": "submissions",
+    "path": "/api/v1/courses/{course_id}/students/submissions",
+    "summary": "List submissions for multiple assignments",
+    "query": {
+      "student_ids[]": {
+        "type": "string",
+        "required": false,
+        "description": "List of student ids to return submissions for. If this argument is omitted, return submissions for the calling user. Students may only list their own submissions. Observers may only list those of associated students. The special id \"all\" will return submissions for all students in the course/section as appropriate."
+      },
+      "assignment_ids[]": {
+        "type": "string",
+        "required": false,
+        "description": "List of assignments to return submissions for. If none are given, submissions for all assignments are returned."
+      },
+      "grouped": {
+        "type": "boolean",
+        "required": false,
+        "description": "If this argument is present, the response will be grouped by student, rather than a flat array of submissions."
+      },
+      "submitted_since": {
+        "type": "datetime",
+        "required": false,
+        "description": "If this argument is set, the response will only include submissions that were submitted after the specified date_time. This will exclude submissions that do not have a submitted_at which will exclude unsubmitted submissions. The value must be formatted as ISO 8601 YYYY-MM-DDTHH:MM:SSZ."
+      },
+      "graded_since": {
+        "type": "datetime",
+        "required": false,
+        "description": "If this argument is set, the response will only include submissions that were graded after the specified date_time. This will exclude submissions that have not been graded. The value must be formatted as ISO 8601 YYYY-MM-DDTHH:MM:SSZ."
+      },
+      "grading_period_id": {
+        "type": "integer",
+        "required": false,
+        "description": "The id of the grading period in which submissions are being requested (Requires grading periods to exist on the account)"
+      },
+      "workflow_state": {
+        "type": "string",
+        "required": false,
+        "description": "The current status of the submission Allowed values: `submitted`, `unsubmitted`, `graded`, `pending_review`"
+      },
+      "enrollment_state": {
+        "type": "string",
+        "required": false,
+        "description": "The current state of the enrollments. If omitted will include all enrollments that are not deleted. Allowed values: active , concluded"
+      },
+      "state_based_on_date": {
+        "type": "boolean",
+        "required": false,
+        "description": "If omitted it is set to true. When set to false it will ignore the effective state of the student enrollments and use the workflow_state for the enrollments. The argument is ignored unless enrollment_state argument is also passed."
+      },
+      "order": {
+        "type": "string",
+        "required": false,
+        "description": "The order submissions will be returned in. Defaults to \"id\". Doesn't affect results for \"grouped\" mode. Allowed values: id , graded_at"
+      },
+      "order_direction": {
+        "type": "string",
+        "required": false,
+        "description": "Determines whether ordered results are returned in ascending or descending order. Defaults to \"ascending\". Doesn't affect results for \"grouped\" mode. Allowed values: ascending , descending"
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Associations to include with the group. total_scores requires the grouped argument. Allowed values: submission_history , submission_comments , submission_html_comments , rubric_assessment , assignment , total_scores , visibility , course , user , sub_assignment_submissions , peer_review_submissions , student_entered_score"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/submissions#method.submissions_api.for_students",
+    "notes": "Use student_ids[]=[\"self\"] to retrieve the authenticated student's submissions across assignments."
+  },
+  "assignment_submissions": {
+    "category": "submissions",
+    "path": "/api/v1/courses/{course_id}/assignments/{assignment_id}/submissions",
+    "summary": "List assignment submissions",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Associations to include with the group. \"group\" will add group_id and group_name. Allowed values: `submission_history`, `submission_comments`, `submission_html_comments`, `rubric_assessment`, `assignment`, `visibility`, `course`, `user`, `group`, `read_status`, `student_entered_score`"
+      },
+      "grouped": {
+        "type": "boolean",
+        "required": false,
+        "description": "If this argument is true, the response will be grouped by student groups."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/submissions#method.submissions_api.index"
+  },
+  "modules": {
+    "category": "modules",
+    "path": "/api/v1/courses/{course_id}/modules",
+    "summary": "List modules",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"items\": Return module items inline if possible. This parameter suggests that Canvas return module items directly in the Module object JSON, to avoid having to make separate API requests for each module when enumerating modules and items. Canvas is free to omit 'items' for any particular module if it deems them too numerous to return inline. Callers must be prepared to use the List Module Items API if items are not returned. - \"content_details\": Requires 'items'. Returns additional details with module items specific to their associated content items. Includes standard lock information for each item. Allowed values: items , content_details"
+      },
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial name of the modules (and module items, if 'items' is specified with include[]) to match and return."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/modules#method.context_modules_api.index",
+    "notes": "Inline items can be incomplete. Use module_items for every module and follow pagination."
+  },
+  "module": {
+    "category": "modules",
+    "path": "/api/v1/courses/{course_id}/modules/{id}",
+    "summary": "Show module",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"items\": Return module items inline if possible. This parameter suggests that Canvas return module items directly in the Module object JSON, to avoid having to make separate API requests for each module when enumerating modules and items. Canvas is free to omit 'items' for any particular module if it deems them too numerous to return inline. Callers must be prepared to use the List Module Items API if items are not returned. - \"content_details\": Requires 'items'. Returns additional details with module items specific to their associated content items. Includes standard lock information for each item. Allowed values: items , content_details"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/modules#method.context_modules_api.show"
+  },
+  "module_items": {
+    "category": "modules",
+    "path": "/api/v1/courses/{course_id}/modules/{module_id}/items",
+    "summary": "List module items",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "If included, will return additional details specific to the content associated with each item. Refer to the Module Item specification for more details. Includes standard lock information for each item. Allowed values: content_details"
+      },
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial title of the items to match and return."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/modules#method.context_module_items_api.index"
+  },
+  "module_item": {
+    "category": "modules",
+    "path": "/api/v1/courses/{course_id}/modules/{module_id}/items/{id}",
+    "summary": "Show module item",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "If included, will return additional details specific to the content associated with this item. Refer to the Module Item specification for more details. Includes standard lock information for each item. Allowed values: content_details"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/modules#method.context_module_items_api.show"
+  },
+  "module_item_sequence": {
+    "category": "modules",
+    "path": "/api/v1/courses/{course_id}/module_item_sequence",
+    "summary": "Get module item sequence",
+    "query": {
+      "asset_type": {
+        "type": "string",
+        "required": false,
+        "description": "The type of asset to find module sequence information for. Use the ModuleItem if it is known (e.g., the user navigated from a module item), since this will avoid ambiguity if the asset appears more than once in the module sequence. Allowed values: ModuleItem , File , Page , Discussion , Assignment , Quiz , ExternalTool"
+      },
+      "asset_id": {
+        "type": "integer",
+        "required": false,
+        "description": "The id of the asset (or the url in the case of a Page)"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/modules#method.context_module_items_api.item_sequence"
+  },
+  "front_page": {
+    "category": "pages",
+    "path": "/api/v1/courses/{course_id}/front_page",
+    "summary": "Show front page",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/pages#method.wiki_pages_api.show_front_page"
+  },
+  "pages": {
+    "category": "pages",
+    "path": "/api/v1/courses/{course_id}/pages",
+    "summary": "List pages",
+    "query": {
+      "sort": {
+        "type": "string",
+        "required": false,
+        "description": "Sort results by this field. Allowed values: `title`, `created_at`, `updated_at`"
+      },
+      "order": {
+        "type": "string",
+        "required": false,
+        "description": "The sorting order. Defaults to 'asc'. Allowed values: `asc`, `desc`"
+      },
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial title of the pages to match and return."
+      },
+      "published": {
+        "type": "boolean",
+        "required": false,
+        "description": "If true, include only published paqes. If false, exclude published pages. If not present, do not filter on published status."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"body\": Optionally include the page body with each Page. If this is a block_editor page, returns the block_editor_attributes. Allowed values: body"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/pages#method.wiki_pages_api.index"
+  },
+  "page": {
+    "category": "pages",
+    "path": "/api/v1/courses/{course_id}/pages/{url_or_id}",
+    "summary": "Show page",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/pages#method.wiki_pages_api.show",
+    "notes": "url_or_id accepts the page slug or numeric ID. Body contains full page HTML."
+  },
+  "page_revisions": {
+    "category": "pages",
+    "path": "/api/v1/courses/{course_id}/pages/{url_or_id}/revisions",
+    "summary": "List revisions",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/pages#method.wiki_pages_api.revisions"
+  },
+  "page_revision": {
+    "category": "pages",
+    "path": "/api/v1/courses/{course_id}/pages/{url_or_id}/revisions/{revision_id}",
+    "summary": "Show revision",
+    "query": {
+      "summary": {
+        "type": "boolean",
+        "required": false,
+        "description": "If set, exclude page content from results"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/pages#method.wiki_pages_api.show_revision"
+  },
+  "files": {
+    "category": "files",
+    "path": "/api/v1/courses/{course_id}/files",
+    "summary": "List files",
+    "query": {
+      "content_types[]": {
+        "type": "string",
+        "required": false,
+        "description": "Filter results by content-type. You can specify type/subtype pairs (e.g., 'image/jpeg'), or simply types (e.g., 'image', which will match 'image/gif', 'image/jpeg', etc.)."
+      },
+      "exclude_content_types[]": {
+        "type": "string",
+        "required": false,
+        "description": "Exclude given content-types from your results. You can specify type/subtype pairs (e.g., 'image/jpeg'), or simply types (e.g., 'image', which will match 'image/gif', 'image/jpeg', etc.)."
+      },
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial name of the files to match and return."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of additional information to include. \"user\":: the user who uploaded the file or last edited its content \"usage_rights\":: copyright and license information for the file (see UsageRights) Allowed values: user"
+      },
+      "only[]": {
+        "type": "array",
+        "required": false,
+        "description": "Array of information to restrict to. Overrides include[] \"names\":: only returns file name information"
+      },
+      "sort": {
+        "type": "string",
+        "required": false,
+        "description": "Sort results by this field. Defaults to 'name'. Note that `sort=user` implies `include[]=user`. Allowed values: `name`, `size`, `created_at`, `updated_at`, `content_type`, `user`"
+      },
+      "order": {
+        "type": "string",
+        "required": false,
+        "description": "The sorting order. Defaults to 'asc'. Allowed values: `asc`, `desc`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/files#method.files.api_index"
+  },
+  "file": {
+    "category": "files",
+    "path": "/api/v1/files/{id}",
+    "summary": "Get file",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of additional information to include. \"user\":: the user who uploaded the file or last edited its content \"usage_rights\":: copyright and license information for the file (see UsageRights) Allowed values: user"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/files#method.files.api_show"
+  },
+  "user_files": {
+    "category": "files",
+    "path": "/api/v1/users/{user_id}/files",
+    "summary": "List files",
+    "query": {
+      "content_types[]": {
+        "type": "string",
+        "required": false,
+        "description": "Filter results by content-type. You can specify type/subtype pairs (e.g., 'image/jpeg'), or simply types (e.g., 'image', which will match 'image/gif', 'image/jpeg', etc.)."
+      },
+      "exclude_content_types[]": {
+        "type": "string",
+        "required": false,
+        "description": "Exclude given content-types from your results. You can specify type/subtype pairs (e.g., 'image/jpeg'), or simply types (e.g., 'image', which will match 'image/gif', 'image/jpeg', etc.)."
+      },
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial name of the files to match and return."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of additional information to include. \"user\":: the user who uploaded the file or last edited its content \"usage_rights\":: copyright and license information for the file (see UsageRights) Allowed values: user"
+      },
+      "only[]": {
+        "type": "array",
+        "required": false,
+        "description": "Array of information to restrict to. Overrides include[] \"names\":: only returns file name information"
+      },
+      "sort": {
+        "type": "string",
+        "required": false,
+        "description": "Sort results by this field. Defaults to 'name'. Note that `sort=user` implies `include[]=user`. Allowed values: `name`, `size`, `created_at`, `updated_at`, `content_type`, `user`"
+      },
+      "order": {
+        "type": "string",
+        "required": false,
+        "description": "The sorting order. Defaults to 'asc'. Allowed values: `asc`, `desc`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/files#method.files.api_index"
+  },
+  "group_files": {
+    "category": "files",
+    "path": "/api/v1/groups/{group_id}/files",
+    "summary": "List files",
+    "query": {
+      "content_types[]": {
+        "type": "string",
+        "required": false,
+        "description": "Filter results by content-type. You can specify type/subtype pairs (e.g., 'image/jpeg'), or simply types (e.g., 'image', which will match 'image/gif', 'image/jpeg', etc.)."
+      },
+      "exclude_content_types[]": {
+        "type": "string",
+        "required": false,
+        "description": "Exclude given content-types from your results. You can specify type/subtype pairs (e.g., 'image/jpeg'), or simply types (e.g., 'image', which will match 'image/gif', 'image/jpeg', etc.)."
+      },
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial name of the files to match and return."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of additional information to include. \"user\":: the user who uploaded the file or last edited its content \"usage_rights\":: copyright and license information for the file (see UsageRights) Allowed values: user"
+      },
+      "only[]": {
+        "type": "array",
+        "required": false,
+        "description": "Array of information to restrict to. Overrides include[] \"names\":: only returns file name information"
+      },
+      "sort": {
+        "type": "string",
+        "required": false,
+        "description": "Sort results by this field. Defaults to 'name'. Note that `sort=user` implies `include[]=user`. Allowed values: `name`, `size`, `created_at`, `updated_at`, `content_type`, `user`"
+      },
+      "order": {
+        "type": "string",
+        "required": false,
+        "description": "The sorting order. Defaults to 'asc'. Allowed values: `asc`, `desc`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/files#method.files.api_index"
+  },
+  "folder_files": {
+    "category": "files",
+    "path": "/api/v1/folders/{id}/files",
+    "summary": "List files",
+    "query": {
+      "content_types[]": {
+        "type": "string",
+        "required": false,
+        "description": "Filter results by content-type. You can specify type/subtype pairs (e.g., 'image/jpeg'), or simply types (e.g., 'image', which will match 'image/gif', 'image/jpeg', etc.)."
+      },
+      "exclude_content_types[]": {
+        "type": "string",
+        "required": false,
+        "description": "Exclude given content-types from your results. You can specify type/subtype pairs (e.g., 'image/jpeg'), or simply types (e.g., 'image', which will match 'image/gif', 'image/jpeg', etc.)."
+      },
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial name of the files to match and return."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of additional information to include. \"user\":: the user who uploaded the file or last edited its content \"usage_rights\":: copyright and license information for the file (see UsageRights) Allowed values: user"
+      },
+      "only[]": {
+        "type": "array",
+        "required": false,
+        "description": "Array of information to restrict to. Overrides include[] \"names\":: only returns file name information"
+      },
+      "sort": {
+        "type": "string",
+        "required": false,
+        "description": "Sort results by this field. Defaults to 'name'. Note that `sort=user` implies `include[]=user`. Allowed values: `name`, `size`, `created_at`, `updated_at`, `content_type`, `user`"
+      },
+      "order": {
+        "type": "string",
+        "required": false,
+        "description": "The sorting order. Defaults to 'asc'. Allowed values: `asc`, `desc`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/files#method.files.api_index"
+  },
+  "folders": {
+    "category": "files",
+    "path": "/api/v1/courses/{course_id}/folders",
+    "summary": "List all folders",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/files#method.folders.list_all_folders"
+  },
+  "folder": {
+    "category": "files",
+    "path": "/api/v1/folders/{id}",
+    "summary": "Get folder",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/files#method.folders.show"
+  },
+  "subfolders": {
+    "category": "files",
+    "path": "/api/v1/folders/{id}/folders",
+    "summary": "List folders",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/files#method.folders.api_index"
+  },
+  "user_folders": {
+    "category": "files",
+    "path": "/api/v1/users/{user_id}/folders",
+    "summary": "List all folders",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/files#method.folders.list_all_folders"
+  },
+  "group_folders": {
+    "category": "files",
+    "path": "/api/v1/groups/{group_id}/folders",
+    "summary": "List all folders",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/files#method.folders.list_all_folders"
+  },
+  "announcements": {
+    "category": "announcements",
+    "path": "/api/v1/announcements",
+    "summary": "List announcements",
+    "query": {
+      "context_codes[]": {
+        "type": "string",
+        "required": true,
+        "description": "List of context_codes to retrieve announcements for (for example, +course_123+). Only courses are presently supported. The call will fail unless the caller has View Announcements permission in all listed courses."
+      },
+      "start_date": {
+        "type": "date",
+        "required": false,
+        "description": "Only return announcements posted since the start_date (inclusive). Defaults to 14 days ago. The value should be formatted as: yyyy-mm-dd or ISO 8601 YYYY-MM-DDTHH:MM:SSZ."
+      },
+      "end_date": {
+        "type": "date",
+        "required": false,
+        "description": "Only return announcements posted before the end_date (inclusive). Defaults to 28 days from start_date. The value should be formatted as: yyyy-mm-dd or ISO 8601 YYYY-MM-DDTHH:MM:SSZ. Announcements scheduled for future posting will only be returned to course administrators."
+      },
+      "available_after": {
+        "type": "date",
+        "required": false,
+        "description": "Only return announcements having locked_at nil or after available_after (exclusive). The value should be formatted as: yyyy-mm-dd or ISO 8601 YYYY-MM-DDTHH:MM:SSZ. Effective only for students (who don't have moderate forum right)."
+      },
+      "active_only": {
+        "type": "boolean",
+        "required": false,
+        "description": "Only return active announcements that have been published. Applies only to requesting users that have permission to view unpublished items. Defaults to false for users with access to view unpublished items, otherwise true and unmodifiable."
+      },
+      "latest_only": {
+        "type": "boolean",
+        "required": false,
+        "description": "Only return the latest announcement for each associated context. The response will include at most one announcement for each specified context in the context_codes[] parameter. Defaults to false."
+      },
+      "include[]": {
+        "type": "array",
+        "required": false,
+        "description": "Optional list of resources to include with the response. May include a string of the name of the resource. Possible values are: \"sections\", \"sections_user_count\" if \"sections\" is passed, includes the course sections that are associated with the topic, if the topic is specific to certain sections of the course. If \"sections_user_count\" is passed, then: (a) If sections were asked for and the topic is specific to certain course sections sections, includes the number of users in each section. (as part of the section json asked for above) (b) Else, includes at the root level the total number of users in the topic's context (group or course) that the topic applies to."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/announcements#method.announcements_api.index",
+    "notes": "Requires context_codes[] such as [\"course_123\"]. Defaults to a limited date window; set start_date and end_date explicitly for history."
+  },
+  "discussions": {
+    "category": "discussion_topics",
+    "path": "/api/v1/courses/{course_id}/discussion_topics",
+    "summary": "List discussion topics",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "If \"all_dates\" is passed, all dates associated with graded discussions' assignments will be included. if \"sections\" is passed, includes the course sections that are associated with the topic, if the topic is specific to certain sections of the course. If \"sections_user_count\" is passed, then: (a) If sections were asked for and the topic is specific to certain course sections, includes the number of users in each section. (as part of the section json asked for above) (b) Else, includes at the root level the total number of users in the topic's context (group or course) that the topic applies to. If \"overrides\" is passed, the overrides for the assignment will be included Allowed values: all_dates , sections , sections_user_count , overrides"
+      },
+      "order_by": {
+        "type": "string",
+        "required": false,
+        "description": "Determines the order of the discussion topic list. Defaults to \"position\". Allowed values: `position`, `recent_activity`, `title`"
+      },
+      "scope": {
+        "type": "string",
+        "required": false,
+        "description": "Only return discussion topics in the given state(s). Defaults to including all topics. Filtering is done after pagination, so pages may be smaller than requested if topics are filtered. Can pass multiple states as comma separated string. Allowed values: locked , unlocked , pinned , unpinned"
+      },
+      "only_announcements": {
+        "type": "boolean",
+        "required": false,
+        "description": "Return announcements instead of discussion topics. Defaults to false"
+      },
+      "filter_by": {
+        "type": "string",
+        "required": false,
+        "description": "The state of the discussion topic to return. Currently only supports unread state. Allowed values: `all`, `unread`"
+      },
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial title of the discussion topics to match and return."
+      },
+      "exclude_context_module_locked_topics": {
+        "type": "boolean",
+        "required": false,
+        "description": "For students, exclude topics that are locked by module progression. Defaults to false."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/discussion_topics#method.discussion_topics.index"
+  },
+  "discussion": {
+    "category": "discussion_topics",
+    "path": "/api/v1/courses/{course_id}/discussion_topics/{topic_id}",
+    "summary": "Get a single topic",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "If \"all_dates\" is passed, all dates associated with graded discussions' assignments will be included. if \"sections\" is passed, includes the course sections that are associated with the topic, if the topic is specific to certain sections of the course. If \"sections_user_count\" is passed, then: (a) If sections were asked for and the topic is specific to certain course sections, includes the number of users in each section. (as part of the section json asked for above) (b) Else, includes at the root level the total number of users in the topic's context (group or course) that the topic applies to. If \"overrides\" is passed, the overrides for the assignment will be included Allowed values: all_dates , sections , sections_user_count , overrides"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/discussion_topics#method.discussion_topics_api.show"
+  },
+  "discussion_view": {
+    "category": "discussion_topics",
+    "path": "/api/v1/courses/{course_id}/discussion_topics/{topic_id}/view",
+    "summary": "Get the full topic",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/discussion_topics#method.discussion_topics_api.view"
+  },
+  "discussion_entries": {
+    "category": "discussion_topics",
+    "path": "/api/v1/courses/{course_id}/discussion_topics/{topic_id}/entries",
+    "summary": "List topic entries",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/discussion_topics#method.discussion_topics_api.entries"
+  },
+  "discussion_replies": {
+    "category": "discussion_topics",
+    "path": "/api/v1/courses/{course_id}/discussion_topics/{topic_id}/entries/{entry_id}/replies",
+    "summary": "List entry replies",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/discussion_topics#method.discussion_topics_api.replies"
+  },
+  "discussion_entry_list": {
+    "category": "discussion_topics",
+    "path": "/api/v1/courses/{course_id}/discussion_topics/{topic_id}/entry_list",
+    "summary": "List entries",
+    "query": {
+      "ids[]": {
+        "type": "string",
+        "required": false,
+        "description": "A list of entry ids to retrieve. Entries will be returned in id order, smallest id first."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/discussion_topics#method.discussion_topics_api.entry_list"
+  },
+  "conversations": {
+    "category": "conversations",
+    "path": "/api/v1/conversations",
+    "summary": "List conversations",
+    "query": {
+      "scope": {
+        "type": "string",
+        "required": false,
+        "description": "When set, only return conversations of the specified type. For example, set to \"unread\" to return only conversations that haven't been read. The default behavior is to return all non-archived conversations (i.e. read and unread). Allowed values: unread , starred , archived , sent"
+      },
+      "filter[]": {
+        "type": "string",
+        "required": false,
+        "description": "When set, only return conversations for the specified courses, groups or users. The id should be prefixed with its type, e.g. \"user_123\","
+      },
+      "filter_mode": {
+        "type": "string",
+        "required": false,
+        "description": "When filter[] contains multiple filters, combine them with this mode, filtering conversations that at have at least all of the contexts (\"and\") or at least one of the contexts (\"or\") Allowed values: and , or , default or"
+      },
+      "include_all_conversation_ids": {
+        "type": "boolean",
+        "required": false,
+        "description": "Default is false. If true, the top-level element of the response will be an object rather than an array, and will have the keys \"conversations\" which will contain the paged conversation data, and \"conversation_ids\" which will contain the ids of all conversations under this scope/filter in the same order."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "\"participant_avatars\":: Optionally include an \"avatar_url\" key for each user participating in the conversation \"uuid\":: Optionally include an \"uuid\" key for each user participating in the conversation Allowed values: participant_avatars , uuid"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/conversations#method.conversations.index"
+  },
+  "conversation": {
+    "category": "conversations",
+    "path": "/api/v1/conversations/{id}",
+    "summary": "Get a single conversation",
+    "query": {
+      "scope": {
+        "type": "string",
+        "required": false,
+        "description": "Used when generating \"visible\" in the API response. See the explanation under the index API action Allowed values: unread , starred , archived"
+      },
+      "filter[]": {
+        "type": "string",
+        "required": false,
+        "description": "Used when generating \"visible\" in the API response. See the explanation under the index API action"
+      },
+      "filter_mode": {
+        "type": "string",
+        "required": false,
+        "description": "Used when generating \"visible\" in the API response. See the explanation under the index API action Allowed values: and , or , default or"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/conversations#method.conversations.show",
+    "fixed_query": {
+      "auto_mark_as_read": false
+    },
+    "notes": "Always forces auto_mark_as_read=false; reading never intentionally changes inbox read state."
+  },
+  "unread_count": {
+    "category": "conversations",
+    "path": "/api/v1/conversations/unread_count",
+    "summary": "Unread count",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/conversations#method.conversations.unread_count"
+  },
+  "recipients": {
+    "category": "search",
+    "path": "/api/v1/search/recipients",
+    "summary": "Find recipients",
+    "query": {
+      "search": {
+        "type": "string",
+        "required": false,
+        "description": "Search terms used for matching users/courses/groups (e.g. \"bob smith\"). If multiple terms are given (separated via whitespace), only results matching all terms will be returned."
+      },
+      "context": {
+        "type": "string",
+        "required": false,
+        "description": "Limit the search to a particular course/group (e.g. \"course_3\" or \"group_4\")."
+      },
+      "exclude[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of ids to exclude from the search. These may be user ids or course/group ids prefixed with \"course_\" or \"group_\" respectively, e.g. exclude[]=1\\&exclude[]=2\\&exclude[]=course_3"
+      },
+      "type": {
+        "type": "string",
+        "required": false,
+        "description": "Limit the search just to users or contexts (groups/courses). Allowed values: `user`, `context`"
+      },
+      "user_id": {
+        "type": "integer",
+        "required": false,
+        "description": "Search for a specific user id. This ignores the other above parameters, and will never return more than one result."
+      },
+      "from_conversation_id": {
+        "type": "integer",
+        "required": false,
+        "description": "When searching by user_id, only users that could be normally messaged by this user will be returned. This parameter allows you to specify a conversation that will be referenced for a shared context -- if both the current user and the searched user are in the conversation, the user will be returned. This is used to start new side conversations."
+      },
+      "permissions[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of permission strings to be checked for each matched context (e.g. \"send_messages\"). This argument determines which permissions may be returned in the response; it won't prevent contexts from being returned if they don't grant the permission(s)."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/search#method.search.recipients"
+  },
+  "planner_items": {
+    "category": "planner",
+    "path": "/api/v1/planner/items",
+    "summary": "List planner items",
+    "query": {
+      "start_date": {
+        "type": "date",
+        "required": false,
+        "description": "Only return items starting from the given date. The value should be formatted as: yyyy-mm-dd or ISO 8601 YYYY-MM-DDTHH:MM:SSZ."
+      },
+      "end_date": {
+        "type": "date",
+        "required": false,
+        "description": "Only return items up to the given date. The value should be formatted as: yyyy-mm-dd or ISO 8601 YYYY-MM-DDTHH:MM:SSZ."
+      },
+      "context_codes[]": {
+        "type": "string",
+        "required": false,
+        "description": "List of context codes of courses and/or groups whose items you want to see. If not specified, defaults to all contexts associated to the current user. Note that concluded courses will be ignored unless specified in the includes[] parameter. The format of this field is the context type, followed by an underscore, followed by the context id. For example: course_42, group_123"
+      },
+      "filter": {
+        "type": "string",
+        "required": false,
+        "description": "Only return items that are completed (includes items with planner_override.marked_complete = true or submitted assignments) Allowed values: `complete_items`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/planner#method.planner.index",
+    "notes": "Set explicit ISO start_date/end_date. Planner is personalized but may omit items; cross-check assignments and submission state for exhaustive deadlines."
+  },
+  "planner_notes": {
+    "category": "planner",
+    "path": "/api/v1/planner_notes",
+    "summary": "List planner notes",
+    "query": {
+      "start_date": {
+        "type": "datetime",
+        "required": false,
+        "description": "Only return notes with todo dates since the start_date (inclusive). No default. The value should be formatted as: yyyy-mm-dd or ISO 8601 YYYY-MM-DDTHH:MM:SSZ."
+      },
+      "end_date": {
+        "type": "datetime",
+        "required": false,
+        "description": "Only return notes with todo dates before the end_date (inclusive). No default. The value should be formatted as: yyyy-mm-dd or ISO 8601 YYYY-MM-DDTHH:MM:SSZ. If end_date and start_date are both specified and equivalent, then only notes with todo dates on that day are returned."
+      },
+      "context_codes[]": {
+        "type": "string",
+        "required": false,
+        "description": "List of context codes of courses whose notes you want to see. If not specified, defaults to all contexts that the user belongs to. The format of this field is the context type, followed by an underscore, followed by the context id. For example: course_42 Including a code matching the user's own context code (e.g. user_1) will include notes that are not associated with any particular course."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/planner#method.planner_notes.index"
+  },
+  "planner_note": {
+    "category": "planner",
+    "path": "/api/v1/planner_notes/{id}",
+    "summary": "Show a planner note",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/planner#method.planner_notes.show"
+  },
+  "planner_overrides": {
+    "category": "planner",
+    "path": "/api/v1/planner/overrides",
+    "summary": "List planner overrides",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/planner#method.planner_overrides.index"
+  },
+  "planner_override": {
+    "category": "planner",
+    "path": "/api/v1/planner/overrides/{id}",
+    "summary": "Show a planner override",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/planner#method.planner_overrides.show"
+  },
+  "calendar_events": {
+    "category": "calendar_events",
+    "path": "/api/v1/calendar_events",
+    "summary": "List calendar events",
+    "query": {
+      "type": {
+        "type": "string",
+        "required": false,
+        "description": "Defaults to \"event\" Allowed values: `event`, `assignment`, `sub_assignment`"
+      },
+      "start_date": {
+        "type": "date",
+        "required": false,
+        "description": "Only return events since the start_date (inclusive). Defaults to today. The value should be formatted as: yyyy-mm-dd or ISO 8601 YYYY-MM-DDTHH:MM:SSZ."
+      },
+      "end_date": {
+        "type": "date",
+        "required": false,
+        "description": "Only return events before the end_date (inclusive). Defaults to start_date. The value should be formatted as: yyyy-mm-dd or ISO 8601 YYYY-MM-DDTHH:MM:SSZ. If end_date is the same as start_date, then only events on that day are returned."
+      },
+      "undated": {
+        "type": "boolean",
+        "required": false,
+        "description": "Defaults to false (dated events only). If true, only return undated events and ignore start_date and end_date."
+      },
+      "all_events": {
+        "type": "boolean",
+        "required": false,
+        "description": "Defaults to false (uses start_date, end_date, and undated criteria). If true, all events are returned, ignoring start_date, end_date, and undated criteria."
+      },
+      "context_codes[]": {
+        "type": "string",
+        "required": false,
+        "description": "List of context codes of courses, groups, users, or accounts whose events you want to see. If not specified, defaults to the current user (i.e personal calendar, no course/group events). Limited to 10 context codes, additional ones are ignored. The format of this field is the context type, followed by an underscore, followed by the context id. For example: course_42"
+      },
+      "excludes[]": {
+        "type": "array",
+        "required": false,
+        "description": "Array of attributes to exclude. Possible values are \"description\", \"child_events\" and \"assignment\""
+      },
+      "includes[]": {
+        "type": "array",
+        "required": false,
+        "description": "Array of optional attributes to include. Possible values are \"web_conference\" and \"series_natural_language\""
+      },
+      "important_dates": {
+        "type": "boolean",
+        "required": false,
+        "description": "Defaults to false. If true, only events with important dates set to true will be returned."
+      },
+      "blackout_date": {
+        "type": "boolean",
+        "required": false,
+        "description": "Defaults to false. If true, only events with blackout date set to true will be returned."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/calendar_events#method.calendar_events_api.index",
+    "notes": "Set context_codes[], start_date, end_date explicitly. Use type=\"assignment\" for due dates, or type=\"event\" for meetings."
+  },
+  "calendar_event": {
+    "category": "calendar_events",
+    "path": "/api/v1/calendar_events/{id}",
+    "summary": "Get a single calendar event or assignment",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/calendar_events#method.calendar_events_api.show"
+  },
+  "course_timetable": {
+    "category": "calendar_events",
+    "path": "/api/v1/courses/{course_id}/calendar_events/timetable",
+    "summary": "Get course timetable",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/calendar_events#method.calendar_events_api.get_course_timetable"
+  },
+  "appointment_groups": {
+    "category": "appointment_groups",
+    "path": "/api/v1/appointment_groups",
+    "summary": "List appointment groups",
+    "query": {
+      "scope": {
+        "type": "string",
+        "required": false,
+        "description": "Defaults to \"reservable\" Allowed values: `reservable`, `manageable`"
+      },
+      "context_codes[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of context codes used to limit returned results."
+      },
+      "include_past_appointments": {
+        "type": "boolean",
+        "required": false,
+        "description": "Defaults to false. If true, includes past appointment groups"
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of additional information to include. \"appointments\":: calendar event time slots for this appointment group \"child_events\":: reservations of those time slots \"participant_count\":: number of reservations \"reserved_times\":: the event id, start time and end time of reservations the current user has made) \"all_context_codes\":: all context codes associated with this appointment group Allowed values: appointments , child_events , participant_count , reserved_times , all_context_codes"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/appointment_groups#method.appointment_groups.index"
+  },
+  "appointment_group": {
+    "category": "appointment_groups",
+    "path": "/api/v1/appointment_groups/{id}",
+    "summary": "Get a single appointment group",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of additional information to include. See include[] argument of \"List appointment groups\" action. \"child_events\":: reservations of time slots time slots \"appointments\":: will always be returned \"all_context_codes\":: all context codes associated with this appointment group Allowed values: child_events , appointments , all_context_codes"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/appointment_groups#method.appointment_groups.show"
+  },
+  "next_appointment": {
+    "category": "appointment_groups",
+    "path": "/api/v1/appointment_groups/next_appointment",
+    "summary": "Get next appointment",
+    "query": {
+      "appointment_group_ids[]": {
+        "type": "string",
+        "required": false,
+        "description": "List of ids of appointment groups to search."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/appointment_groups#method.appointment_groups.next_appointment"
+  },
+  "quizzes": {
+    "category": "quizzes",
+    "path": "/api/v1/courses/{course_id}/quizzes",
+    "summary": "List quizzes in a course",
+    "query": {
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial title of the quizzes to match and return."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/quizzes#method.quizzes-quizzes_api.index"
+  },
+  "quiz": {
+    "category": "quizzes",
+    "path": "/api/v1/courses/{course_id}/quizzes/{id}",
+    "summary": "Get a single quiz",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/quizzes#method.quizzes-quizzes_api.show"
+  },
+  "quiz_questions": {
+    "category": "quiz_questions",
+    "path": "/api/v1/courses/{course_id}/quizzes/{quiz_id}/questions",
+    "summary": "List questions in a quiz or a submission",
+    "query": {
+      "quiz_submission_id": {
+        "type": "integer",
+        "required": false,
+        "description": "If specified, the endpoint will return the questions that were presented for that submission. This is useful if the quiz has been modified after the submission was created and the latest quiz version's set of questions does not match the submission's. NOTE: you must specify quiz_submission_attempt as well if you specify this parameter."
+      },
+      "quiz_submission_attempt": {
+        "type": "integer",
+        "required": false,
+        "description": "The attempt of the submission you want the questions for."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/quiz_questions#method.quizzes-quiz_questions.index",
+    "notes": "Only questions Canvas permits the caller to see. This server never starts a quiz attempt or bypasses release rules."
+  },
+  "quiz_question": {
+    "category": "quiz_questions",
+    "path": "/api/v1/courses/{course_id}/quizzes/{quiz_id}/questions/{id}",
+    "summary": "Get a single quiz question",
+    "query": {
+      "id": {
+        "type": "integer",
+        "required": true,
+        "description": "The quiz question unique identifier."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/quiz_questions#method.quizzes-quiz_questions.show"
+  },
+  "quiz_submissions": {
+    "category": "quiz_submissions",
+    "path": "/api/v1/courses/{course_id}/quizzes/{quiz_id}/submissions",
+    "summary": "Get all quiz submissions.",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Associations to include with the quiz submission. Allowed values: `submission`, `quiz`, `user`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/quiz_submissions#method.quizzes-quiz_submissions_api.index"
+  },
+  "my_quiz_submission": {
+    "category": "quiz_submissions",
+    "path": "/api/v1/courses/{course_id}/quizzes/{quiz_id}/submission",
+    "summary": "Get the quiz submission.",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Associations to include with the quiz submission. Allowed values: `submission`, `quiz`, `user`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/quiz_submissions#method.quizzes-quiz_submissions_api.submission"
+  },
+  "quiz_submission": {
+    "category": "quiz_submissions",
+    "path": "/api/v1/courses/{course_id}/quizzes/{quiz_id}/submissions/{id}",
+    "summary": "Get a single quiz submission.",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Associations to include with the quiz submission. Allowed values: `submission`, `quiz`, `user`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/quiz_submissions#method.quizzes-quiz_submissions_api.show"
+  },
+  "quiz_submission_questions": {
+    "category": "quiz_submission_questions",
+    "path": "/api/v1/quiz_submissions/{quiz_submission_id}/questions",
+    "summary": "Get all quiz submission questions.",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Associations to include with the quiz submission question. Allowed values: `quiz_question`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/quiz_submission_questions#method.quizzes-quiz_submission_questions.index"
+  },
+  "groups": {
+    "category": "groups",
+    "path": "/api/v1/users/self/groups",
+    "summary": "List your groups",
+    "query": {
+      "context_type": {
+        "type": "string",
+        "required": false,
+        "description": "Only include groups that are in this type of context. Allowed values: `Account`, `Course`"
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"tabs\": Include the list of tabs configured for each group. See the List available tabs API for more information. Allowed values: tabs"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/groups#method.groups.index"
+  },
+  "course_groups": {
+    "category": "groups",
+    "path": "/api/v1/courses/{course_id}/groups",
+    "summary": "List the groups available in a context.",
+    "query": {
+      "only_own_groups": {
+        "type": "boolean",
+        "required": false,
+        "description": "Will only include groups that the user belongs to if this is set"
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"tabs\": Include the list of tabs configured for each group. See the List available tabs API for more information. Allowed values: tabs"
+      },
+      "collaboration_state": {
+        "type": "string",
+        "required": false,
+        "description": "Filter groups by their collaboration state: - \"all\": Return both collaborative and non-collaborative groups - \"collaborative\": Return only collaborative groups (default) - \"non_collaborative\": Return only non-collaborative groups"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/groups#method.groups.context_index"
+  },
+  "group": {
+    "category": "groups",
+    "path": "/api/v1/groups/{group_id}",
+    "summary": "Get a single group",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"permissions\": Include permissions the current user has for the group. - \"tabs\": Include the list of tabs configured for each group. See the List available tabs API for more information. Allowed values: permissions , tabs"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/groups#method.groups.show"
+  },
+  "group_users": {
+    "category": "groups",
+    "path": "/api/v1/groups/{group_id}/users",
+    "summary": "List group's users",
+    "query": {
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial name or full ID of the users to match and return in the results list. Must be at least 2 characters."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "\"avatar_url\": Include users' avatar_urls. Allowed values: `avatar_url`"
+      },
+      "exclude_inactive": {
+        "type": "boolean",
+        "required": false,
+        "description": "Whether to filter out inactive users from the results. Defaults to false unless explicitly provided."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/groups#method.groups.users"
+  },
+  "group_memberships": {
+    "category": "groups",
+    "path": "/api/v1/groups/{group_id}/memberships",
+    "summary": "List group memberships",
+    "query": {
+      "filter_states[]": {
+        "type": "string",
+        "required": false,
+        "description": "Only list memberships with the given workflow_states. By default it will return all memberships. Allowed values: accepted , invited , requested"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/groups#method.group_memberships.index"
+  },
+  "group_activity": {
+    "category": "groups",
+    "path": "/api/v1/groups/{group_id}/activity_stream",
+    "summary": "Group activity stream",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/groups#method.groups.activity_stream"
+  },
+  "group_permissions": {
+    "category": "groups",
+    "path": "/api/v1/groups/{group_id}/permissions",
+    "summary": "Permissions",
+    "query": {
+      "permissions[]": {
+        "type": "string",
+        "required": false,
+        "description": "List of permissions to check against the authenticated user. Permission names are documented in the List assignable permissions endpoint."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/groups#method.groups.permissions"
+  },
+  "group_categories": {
+    "category": "group_categories",
+    "path": "/api/v1/courses/{course_id}/group_categories",
+    "summary": "List group categories for a context",
+    "query": {
+      "collaboration_state": {
+        "type": "string",
+        "required": false,
+        "description": "Filter group categories by their collaboration state: - \"all\": Return both collaborative and non-collaborative group categories - \"collaborative\": Return only collaborative group categories (default) - \"non_collaborative\": Return only non-collaborative group categories"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/group_categories#method.group_categories.index"
+  },
+  "group_category": {
+    "category": "group_categories",
+    "path": "/api/v1/group_categories/{group_category_id}",
+    "summary": "Get a single group category",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/group_categories#method.group_categories.show"
+  },
+  "category_groups": {
+    "category": "group_categories",
+    "path": "/api/v1/group_categories/{group_category_id}/groups",
+    "summary": "List groups in group category",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/group_categories#method.group_categories.groups"
+  },
+  "enrollments": {
+    "category": "enrollments",
+    "path": "/api/v1/users/{user_id}/enrollments",
+    "summary": "List enrollments",
+    "query": {
+      "type[]": {
+        "type": "string",
+        "required": false,
+        "description": "A list of enrollment types to return. Accepted values are 'StudentEnrollment', 'TeacherEnrollment', 'TaEnrollment', 'DesignerEnrollment', and 'ObserverEnrollment.' If omitted, all enrollment types are returned. This argument is ignored if role is given."
+      },
+      "role[]": {
+        "type": "string",
+        "required": false,
+        "description": "A list of enrollment roles to return. Accepted values include course-level roles created by the Add Role API as well as the base enrollment types accepted by the type argument above."
+      },
+      "state[]": {
+        "type": "string",
+        "required": false,
+        "description": "Filter by enrollment state. If omitted, 'active' and 'invited' enrollments are returned. The following synthetic states are supported only when querying a user's enrollments (either via user_id argument or via user enrollments endpoint): +current_and_invited+, +current_and_future+, +current_future_and_restricted+, +current_and_concluded+ Allowed values: active , invited , creation_pending , deleted , rejected , completed , inactive , current_and_invited , current_and_future , current_future_and_restricted , current_and_concluded"
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of additional information to include on the enrollment or user records. \"avatar_url\" and \"group_ids\" will be returned on the user record. If \"current_points\" is specified, the fields \"current_points\" and (if the caller has permissions to manage grades) \"unposted_current_points\" will be included in the \"grades\" hash for student enrollments. Allowed values: avatar_url , group_ids , locked , observed_users , can_be_removed , uuid , current_points"
+      },
+      "user_id": {
+        "type": "string",
+        "required": false,
+        "description": "Filter by user_id (only valid for course or section enrollment queries). If set to the current user's id, this is a way to determine if the user has any enrollments in the course or section, independent of whether the user has permission to view other people on the roster."
+      },
+      "grading_period_id": {
+        "type": "integer",
+        "required": false,
+        "description": "Return grades for the given grading_period. If this parameter is not specified, the returned grades will be for the whole course."
+      },
+      "enrollment_term_id": {
+        "type": "integer",
+        "required": false,
+        "description": "Returns only enrollments for the specified enrollment term. This parameter only applies to the user enrollments path. May pass the ID from the enrollment terms api or the SIS id prepended with 'sis_term_id:'."
+      },
+      "sis_account_id[]": {
+        "type": "string",
+        "required": false,
+        "description": "Returns only enrollments for the specified SIS account ID(s). Does not look into sub_accounts. May pass in array or string."
+      },
+      "sis_course_id[]": {
+        "type": "string",
+        "required": false,
+        "description": "Returns only enrollments matching the specified SIS course ID(s). May pass in array or string."
+      },
+      "sis_section_id[]": {
+        "type": "string",
+        "required": false,
+        "description": "Returns only section enrollments matching the specified SIS section ID(s). May pass in array or string."
+      },
+      "sis_user_id[]": {
+        "type": "string",
+        "required": false,
+        "description": "Returns only enrollments for the specified SIS user ID(s). May pass in array or string."
+      },
+      "created_for_sis_id[]": {
+        "type": "boolean",
+        "required": false,
+        "description": "If sis_user_id is present and created_for_sis_id is true, Returns only enrollments for the specified SIS ID(s). If a user has two sis_id's, one enrollment may be created using one of the two ids. This would limit the enrollments returned from the endpoint to enrollments that were created from a sis_import with that sis_user_id"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/enrollments#method.enrollments_api.index"
+  },
+  "course_enrollments": {
+    "category": "enrollments",
+    "path": "/api/v1/courses/{course_id}/enrollments",
+    "summary": "List enrollments",
+    "query": {
+      "type[]": {
+        "type": "string",
+        "required": false,
+        "description": "A list of enrollment types to return. Accepted values are 'StudentEnrollment', 'TeacherEnrollment', 'TaEnrollment', 'DesignerEnrollment', and 'ObserverEnrollment.' If omitted, all enrollment types are returned. This argument is ignored if role is given."
+      },
+      "role[]": {
+        "type": "string",
+        "required": false,
+        "description": "A list of enrollment roles to return. Accepted values include course-level roles created by the Add Role API as well as the base enrollment types accepted by the type argument above."
+      },
+      "state[]": {
+        "type": "string",
+        "required": false,
+        "description": "Filter by enrollment state. If omitted, 'active' and 'invited' enrollments are returned. The following synthetic states are supported only when querying a user's enrollments (either via user_id argument or via user enrollments endpoint): +current_and_invited+, +current_and_future+, +current_future_and_restricted+, +current_and_concluded+ Allowed values: active , invited , creation_pending , deleted , rejected , completed , inactive , current_and_invited , current_and_future , current_future_and_restricted , current_and_concluded"
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Array of additional information to include on the enrollment or user records. \"avatar_url\" and \"group_ids\" will be returned on the user record. If \"current_points\" is specified, the fields \"current_points\" and (if the caller has permissions to manage grades) \"unposted_current_points\" will be included in the \"grades\" hash for student enrollments. Allowed values: avatar_url , group_ids , locked , observed_users , can_be_removed , uuid , current_points"
+      },
+      "user_id": {
+        "type": "string",
+        "required": false,
+        "description": "Filter by user_id (only valid for course or section enrollment queries). If set to the current user's id, this is a way to determine if the user has any enrollments in the course or section, independent of whether the user has permission to view other people on the roster."
+      },
+      "grading_period_id": {
+        "type": "integer",
+        "required": false,
+        "description": "Return grades for the given grading_period. If this parameter is not specified, the returned grades will be for the whole course."
+      },
+      "enrollment_term_id": {
+        "type": "integer",
+        "required": false,
+        "description": "Returns only enrollments for the specified enrollment term. This parameter only applies to the user enrollments path. May pass the ID from the enrollment terms api or the SIS id prepended with 'sis_term_id:'."
+      },
+      "sis_account_id[]": {
+        "type": "string",
+        "required": false,
+        "description": "Returns only enrollments for the specified SIS account ID(s). Does not look into sub_accounts. May pass in array or string."
+      },
+      "sis_course_id[]": {
+        "type": "string",
+        "required": false,
+        "description": "Returns only enrollments matching the specified SIS course ID(s). May pass in array or string."
+      },
+      "sis_section_id[]": {
+        "type": "string",
+        "required": false,
+        "description": "Returns only section enrollments matching the specified SIS section ID(s). May pass in array or string."
+      },
+      "sis_user_id[]": {
+        "type": "string",
+        "required": false,
+        "description": "Returns only enrollments for the specified SIS user ID(s). May pass in array or string."
+      },
+      "created_for_sis_id[]": {
+        "type": "boolean",
+        "required": false,
+        "description": "If sis_user_id is present and created_for_sis_id is true, Returns only enrollments for the specified SIS ID(s). If a user has two sis_id's, one enrollment may be created using one of the two ids. This would limit the enrollments returned from the endpoint to enrollments that were created from a sis_import with that sis_user_id"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/enrollments#method.enrollments_api.index"
+  },
+  "sections": {
+    "category": "sections",
+    "path": "/api/v1/courses/{course_id}/sections",
+    "summary": "List course sections",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"students\": Associations to include with the group. Note: this is only available if you have permission to view users or grades in the course - \"avatar_url\": Include the avatar URLs for students returned. - \"enrollments\": If 'students' is also included, return the section enrollment for each student - \"total_students\": Returns the total amount of active and invited students for the course section - \"passback_status\": Include the grade passback status. - \"permissions\": Include whether section grants :manage_calendar permission to the caller Allowed values: students , avatar_url , enrollments , total_students , passback_status , permissions"
+      },
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "When included, searches course sections for the term. Returns only matching results. Term must be at least 2 characters."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/sections#method.sections.index"
+  },
+  "section": {
+    "category": "sections",
+    "path": "/api/v1/sections/{id}",
+    "summary": "Get section information",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"students\": Associations to include with the group. Note: this is only available if you have permission to view users or grades in the course - \"avatar_url\": Include the avatar URLs for students returned. - \"enrollments\": If 'students' is also included, return the section enrollment for each student - \"total_students\": Returns the total amount of active and invited students for the course section - \"passback_status\": Include the grade passback status. - \"permissions\": Include whether section grants :manage_calendar permission to the caller Allowed values: students , avatar_url , enrollments , total_students , passback_status , permissions"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/sections#method.sections.show"
+  },
+  "section_users": {
+    "category": "sections",
+    "path": "/api/v1/sections/{id}/users",
+    "summary": "List section's users",
+    "query": {
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial name or full ID of the users to match and return in the results list. Must be at least 2 characters."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "\"avatar_url\": Include users' avatar_urls. Allowed values: `avatar_url`"
+      },
+      "exclude_inactive": {
+        "type": "boolean",
+        "required": false,
+        "description": "Whether to filter out inactive users from the results. Defaults to false unless explicitly provided."
+      },
+      "enrollment_type": {
+        "type": "string",
+        "required": false,
+        "description": "When set, only return users with the specified enrollment type for the given section. Allowed values: `teacher`, `student`, `ta`, `observer`, `designer`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/sections#method.sections.users"
+  },
+  "tabs": {
+    "category": "tabs",
+    "path": "/api/v1/courses/{course_id}/tabs",
+    "summary": "List available tabs for a course or group",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"course_subject_tabs\": Optional flag to return the tabs associated with a canvas_for_elementary subject course's home page instead of the typical sidebar navigation. Only takes effect if this request is for a course context in a canvas_for_elementary-enabled account or sub-account. Allowed values: course_subject_tabs"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/tabs#method.tabs.index"
+  },
+  "group_tabs": {
+    "category": "tabs",
+    "path": "/api/v1/groups/{group_id}/tabs",
+    "summary": "List available tabs for a course or group",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"course_subject_tabs\": Optional flag to return the tabs associated with a canvas_for_elementary subject course's home page instead of the typical sidebar navigation. Only takes effect if this request is for a course context in a canvas_for_elementary-enabled account or sub-account. Allowed values: course_subject_tabs"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/tabs#method.tabs.index"
+  },
+  "rubrics": {
+    "category": "rubrics",
+    "path": "/api/v1/courses/{course_id}/rubrics",
+    "summary": "List rubrics",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/rubrics#method.rubrics_api.index"
+  },
+  "rubric": {
+    "category": "rubrics",
+    "path": "/api/v1/courses/{course_id}/rubrics/{id}",
+    "summary": "Get a single rubric",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Related records to include in the response. Allowed values: `assessments`, `graded_assessments`, `peer_assessments`, `associations`, `assignment_associations`, `course_associations`, `account_associations`"
+      },
+      "style": {
+        "type": "string",
+        "required": false,
+        "description": "Applicable only if assessments are being returned. If included, returns either all criteria data associated with the assessment, or just the comments. If not included, both data and comments are omitted. Allowed values: `full`, `comments_only`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/rubrics#method.rubrics_api.show"
+  },
+  "peer_reviews": {
+    "category": "peer_reviews",
+    "path": "/api/v1/courses/{course_id}/assignments/{assignment_id}/peer_reviews",
+    "summary": "Get all Peer Reviews",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Associations to include with the peer review. Allowed values: `submission_comments`, `user`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/peer_reviews#method.peer_reviews_api.index"
+  },
+  "submission_peer_reviews": {
+    "category": "peer_reviews",
+    "path": "/api/v1/courses/{course_id}/assignments/{assignment_id}/submissions/{submission_id}/peer_reviews",
+    "summary": "Get all Peer Reviews",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Associations to include with the peer review. Allowed values: `submission_comments`, `user`"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/peer_reviews#method.peer_reviews_api.index"
+  },
+  "grading_periods": {
+    "category": "grading_periods",
+    "path": "/api/v1/courses/{course_id}/grading_periods",
+    "summary": "List grading periods",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/grading_periods#method.grading_periods.index"
+  },
+  "grading_period": {
+    "category": "grading_periods",
+    "path": "/api/v1/courses/{course_id}/grading_periods/{id}",
+    "summary": "Get a single grading period",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/grading_periods#method.grading_periods.show"
+  },
+  "grading_standards": {
+    "category": "grading_standards",
+    "path": "/api/v1/courses/{course_id}/grading_standards",
+    "summary": "List the grading standards available in a context.",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/grading_standards#method.grading_standards_api.context_index"
+  },
+  "grading_standard": {
+    "category": "grading_standards",
+    "path": "/api/v1/courses/{course_id}/grading_standards/{grading_standard_id}",
+    "summary": "Get a single grading standard in a context.",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/grading_standards#method.grading_standards_api.context_show"
+  },
+  "late_policy": {
+    "category": "late_policy",
+    "path": "/api/v1/courses/{id}/late_policy",
+    "summary": "Get a late policy",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/late_policy#method.late_policy.show"
+  },
+  "outcome": {
+    "category": "outcomes",
+    "path": "/api/v1/outcomes/{id}",
+    "summary": "Show an outcome",
+    "query": {
+      "add_defaults": {
+        "type": "boolean",
+        "required": false,
+        "description": "If defaults are requested, then color and mastery level defaults will be added to outcome ratings in the result. This will only take effect if the Account Level Mastery Scales FF is DISABLED"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/outcomes#method.outcomes_api.show"
+  },
+  "outcome_alignments": {
+    "category": "outcomes",
+    "path": "/api/v1/courses/{course_id}/outcome_alignments",
+    "summary": "Get outcome alignments for a student or assignment",
+    "query": {
+      "course_id": {
+        "type": "integer",
+        "required": true,
+        "description": "The id of the course"
+      },
+      "assignment_id": {
+        "type": "integer",
+        "required": false,
+        "description": "The id of the assignment. When provided without student_id, returns all outcome alignments for the assignment (requires manage_grades or view_all_grades permission). When provided with student_id, filters to that student's submission."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/outcomes#method.outcomes_api.outcome_alignments"
+  },
+  "outcome_groups": {
+    "category": "outcome_groups",
+    "path": "/api/v1/courses/{course_id}/outcome_groups",
+    "summary": "Get all outcome groups for context",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/outcome_groups#method.outcome_groups_api.index"
+  },
+  "outcome_group": {
+    "category": "outcome_groups",
+    "path": "/api/v1/courses/{course_id}/outcome_groups/{id}",
+    "summary": "Show an outcome group",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/outcome_groups#method.outcome_groups_api.show"
+  },
+  "outcome_group_outcomes": {
+    "category": "outcome_groups",
+    "path": "/api/v1/courses/{course_id}/outcome_groups/{id}/outcomes",
+    "summary": "List linked outcomes",
+    "query": {
+      "outcome_style": {
+        "type": "string",
+        "required": false,
+        "description": "The detail level of the outcomes. Defaults to \"abbrev\". Specify \"full\" for more information."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/outcome_groups#method.outcome_groups_api.outcomes"
+  },
+  "outcome_subgroups": {
+    "category": "outcome_groups",
+    "path": "/api/v1/courses/{course_id}/outcome_groups/{id}/subgroups",
+    "summary": "List subgroups",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/outcome_groups#method.outcome_groups_api.subgroups"
+  },
+  "outcome_results": {
+    "category": "outcome_results",
+    "path": "/api/v1/courses/{course_id}/outcome_results",
+    "summary": "Get outcome results",
+    "query": {
+      "user_ids[]": {
+        "type": "integer",
+        "required": false,
+        "description": "If specified, only the users whose ids are given will be included in the results. SIS ids can be used, prefixed by \"sis_user_id:\". It is an error to specify an id for a user who is not a student in the context."
+      },
+      "outcome_ids[]": {
+        "type": "integer",
+        "required": false,
+        "description": "If specified, only the outcomes whose ids are given will be included in the results. it is an error to specify an id for an outcome which is not linked to the context."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "[String, \"alignments\""
+      },
+      "include_hidden": {
+        "type": "boolean",
+        "required": false,
+        "description": "If true, results that are hidden from the learning mastery gradebook and student rollup scores will be included"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/outcome_results#method.outcome_results.index"
+  },
+  "outcome_rollups": {
+    "category": "outcome_results",
+    "path": "/api/v1/courses/{course_id}/outcome_rollups",
+    "summary": "Get outcome result rollups",
+    "query": {
+      "aggregate": {
+        "type": "string",
+        "required": false,
+        "description": "If specified, instead of returning one rollup for each user, all the user rollups will be combined into one rollup for the course that will contain the average (or median, see below) rollup score for each outcome. Allowed values: course"
+      },
+      "aggregate_stat": {
+        "type": "string",
+        "required": false,
+        "description": "If aggregate rollups requested, then this value determines what statistic is used for the aggregate. Defaults to \"mean\" if this value is not specified. Allowed values: mean , median"
+      },
+      "user_ids[]": {
+        "type": "integer",
+        "required": false,
+        "description": "If specified, only the users whose ids are given will be included in the results or used in an aggregate result. it is an error to specify an id for a user who is not a student in the context"
+      },
+      "outcome_ids[]": {
+        "type": "integer",
+        "required": false,
+        "description": "If specified, only the outcomes whose ids are given will be included in the results. it is an error to specify an id for an outcome which is not linked to the context."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "[String, \"courses\""
+      },
+      "exclude[]": {
+        "type": "string",
+        "required": false,
+        "description": "Specify additional values to exclude. \"missing_user_rollups\" excludes rollups for users without results. \"missing_outcome_results\" excludes outcomes without results. Allowed values: missing_user_rollups , missing_outcome_results , \\`\\`"
+      },
+      "sort_by": {
+        "type": "string",
+        "required": false,
+        "description": "If specified, sorts outcome result rollups. \"student\" sorting will sort by a user's sortable name. \"outcome\" sorting will sort by the given outcome's rollup score. The latter requires specifying the \"sort_outcome_id\" parameter. By default, the sort order is ascending. Allowed values: student , outcome"
+      },
+      "sort_outcome_id": {
+        "type": "integer",
+        "required": false,
+        "description": "If outcome sorting requested, then this determines which outcome to use for rollup score sorting."
+      },
+      "sort_order": {
+        "type": "string",
+        "required": false,
+        "description": "If sorting requested, then this allows changing the default sort order of ascending to descending. Allowed values: asc , desc"
+      },
+      "add_defaults": {
+        "type": "boolean",
+        "required": false,
+        "description": "If defaults are requested, then color and mastery level defaults will be added to outcome ratings in the rollup. This will only take effect if the Account Level Mastery Scales FF is DISABLED"
+      },
+      "contributing_scores": {
+        "type": "boolean",
+        "required": false,
+        "description": "DEPRECATED : This parameter is deprecated. Use the separate GET /api/v1/courses/:course_id/outcomes/:outcome_id/contributing_scores endpoint instead to fetch contributing scores for a specific outcome. If contributing scores are requested, then each individual outcome score will also include all graded artifacts that contributed to the outcome score"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/outcome_results#method.outcome_results.rollups"
+  },
+  "favorite_courses": {
+    "category": "favorites",
+    "path": "/api/v1/users/self/favorites/courses",
+    "summary": "List favorite courses",
+    "query": {
+      "exclude_blueprint_courses": {
+        "type": "boolean",
+        "required": false,
+        "description": "When set, only return courses that are not configured as blueprint courses."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/favorites#method.favorites.list_favorite_courses"
+  },
+  "favorite_groups": {
+    "category": "favorites",
+    "path": "/api/v1/users/self/favorites/groups",
+    "summary": "List favorite groups",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/favorites#method.favorites.list_favorite_groups"
+  },
+  "bookmarks": {
+    "category": "bookmarks",
+    "path": "/api/v1/users/self/bookmarks",
+    "summary": "List bookmarks",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/bookmarks#method.bookmarks-bookmarks.index"
+  },
+  "bookmark": {
+    "category": "bookmarks",
+    "path": "/api/v1/users/self/bookmarks/{id}",
+    "summary": "Get bookmark",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/bookmarks#method.bookmarks-bookmarks.show"
+  },
+  "collaborations": {
+    "category": "collaborations",
+    "path": "/api/v1/courses/{course_id}/collaborations",
+    "summary": "List collaborations",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/collaborations#method.collaborations.api_index"
+  },
+  "group_collaborations": {
+    "category": "collaborations",
+    "path": "/api/v1/groups/{group_id}/collaborations",
+    "summary": "List collaborations",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/collaborations#method.collaborations.api_index"
+  },
+  "conferences": {
+    "category": "conferences",
+    "path": "/api/v1/courses/{course_id}/conferences",
+    "summary": "List conferences",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/conferences#method.conferences.index"
+  },
+  "group_conferences": {
+    "category": "conferences",
+    "path": "/api/v1/groups/{group_id}/conferences",
+    "summary": "List conferences",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/conferences#method.conferences.index"
+  },
+  "external_tools": {
+    "category": "external_tools",
+    "path": "/api/v1/courses/{course_id}/external_tools",
+    "summary": "List external tools",
+    "query": {
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial name of the tools to match and return."
+      },
+      "selectable": {
+        "type": "boolean",
+        "required": false,
+        "description": "If true, then only tools that are meant to be selectable are returned."
+      },
+      "include_parents": {
+        "type": "boolean",
+        "required": false,
+        "description": "If true, then include tools installed in all accounts above the current context"
+      },
+      "placement": {
+        "type": "string",
+        "required": false,
+        "description": "The placement type to filter by. Return all tools at the current context as well as all tools from the parent, and filter the tools list to only those with a placement of 'editor_button'"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/external_tools#method.external_tools.index"
+  },
+  "communication_channels": {
+    "category": "communication_channels",
+    "path": "/api/v1/users/{user_id}/communication_channels",
+    "summary": "List user communication channels",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/communication_channels#method.communication_channels.index"
+  },
+  "notification_preferences": {
+    "category": "notification_preferences",
+    "path": "/api/v1/users/{user_id}/communication_channels/{communication_channel_id}/notification_preferences",
+    "summary": "List preferences",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/notification_preferences#method.notification_preferences.index"
+  },
+  "account_notifications": {
+    "category": "account_notifications",
+    "path": "/api/v1/accounts/{account_id}/account_notifications",
+    "summary": "Index of active global notification for the user",
+    "query": {
+      "include_past": {
+        "type": "boolean",
+        "required": false,
+        "description": "Include past and dismissed global announcements."
+      },
+      "include_all": {
+        "type": "boolean",
+        "required": false,
+        "description": "Include all global announcements, regardless of user's role or availability date. Only available to account admins."
+      },
+      "show_is_closed": {
+        "type": "boolean",
+        "required": false,
+        "description": "Include a flag for each notification indicating whether it has been read by the user."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/account_notifications#method.account_notifications.user_index"
+  },
+  "smart_search": {
+    "category": "smart_search",
+    "path": "/api/v1/courses/{course_id}/smartsearch",
+    "summary": "Search course content",
+    "query": {
+      "q": {
+        "type": "string",
+        "required": true,
+        "description": "The search query"
+      },
+      "filter[]": {
+        "type": "string",
+        "required": false,
+        "description": "Types of objects to search. By default, all supported types are searched. Supported types include +pages+, +assignments+, +announcements+, and +discussion_topics+."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "Optional information to include with each search result: modules:: An array of module objects that the search result belongs to. status:: The published status for all results and the due_date for all assignments. Allowed values: status , modules"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/smart_search#method.smart_search.search",
+    "notes": "Optional beta feature; the school may return 403/404. Fall back to assignments, pages, discussions, and files search_term filters."
+  },
+  "group_front_page": {
+    "category": "pages",
+    "path": "/api/v1/groups/{group_id}/front_page",
+    "summary": "Show front page",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/pages#method.wiki_pages_api.show_front_page"
+  },
+  "group_pages": {
+    "category": "pages",
+    "path": "/api/v1/groups/{group_id}/pages",
+    "summary": "List pages",
+    "query": {
+      "sort": {
+        "type": "string",
+        "required": false,
+        "description": "Sort results by this field. Allowed values: `title`, `created_at`, `updated_at`"
+      },
+      "order": {
+        "type": "string",
+        "required": false,
+        "description": "The sorting order. Defaults to 'asc'. Allowed values: `asc`, `desc`"
+      },
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial title of the pages to match and return."
+      },
+      "published": {
+        "type": "boolean",
+        "required": false,
+        "description": "If true, include only published paqes. If false, exclude published pages. If not present, do not filter on published status."
+      },
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "- \"body\": Optionally include the page body with each Page. If this is a block_editor page, returns the block_editor_attributes. Allowed values: body"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/pages#method.wiki_pages_api.index"
+  },
+  "group_page": {
+    "category": "pages",
+    "path": "/api/v1/groups/{group_id}/pages/{url_or_id}",
+    "summary": "Show page",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/pages#method.wiki_pages_api.show"
+  },
+  "group_discussions": {
+    "category": "discussion_topics",
+    "path": "/api/v1/groups/{group_id}/discussion_topics",
+    "summary": "List discussion topics",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "If \"all_dates\" is passed, all dates associated with graded discussions' assignments will be included. if \"sections\" is passed, includes the course sections that are associated with the topic, if the topic is specific to certain sections of the course. If \"sections_user_count\" is passed, then: (a) If sections were asked for and the topic is specific to certain course sections, includes the number of users in each section. (as part of the section json asked for above) (b) Else, includes at the root level the total number of users in the topic's context (group or course) that the topic applies to. If \"overrides\" is passed, the overrides for the assignment will be included Allowed values: all_dates , sections , sections_user_count , overrides"
+      },
+      "order_by": {
+        "type": "string",
+        "required": false,
+        "description": "Determines the order of the discussion topic list. Defaults to \"position\". Allowed values: `position`, `recent_activity`, `title`"
+      },
+      "scope": {
+        "type": "string",
+        "required": false,
+        "description": "Only return discussion topics in the given state(s). Defaults to including all topics. Filtering is done after pagination, so pages may be smaller than requested if topics are filtered. Can pass multiple states as comma separated string. Allowed values: locked , unlocked , pinned , unpinned"
+      },
+      "only_announcements": {
+        "type": "boolean",
+        "required": false,
+        "description": "Return announcements instead of discussion topics. Defaults to false"
+      },
+      "filter_by": {
+        "type": "string",
+        "required": false,
+        "description": "The state of the discussion topic to return. Currently only supports unread state. Allowed values: `all`, `unread`"
+      },
+      "search_term": {
+        "type": "string",
+        "required": false,
+        "description": "The partial title of the discussion topics to match and return."
+      },
+      "exclude_context_module_locked_topics": {
+        "type": "boolean",
+        "required": false,
+        "description": "For students, exclude topics that are locked by module progression. Defaults to false."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/discussion_topics#method.discussion_topics.index"
+  },
+  "group_discussion": {
+    "category": "discussion_topics",
+    "path": "/api/v1/groups/{group_id}/discussion_topics/{topic_id}",
+    "summary": "Get a single topic",
+    "query": {
+      "include[]": {
+        "type": "string",
+        "required": false,
+        "description": "If \"all_dates\" is passed, all dates associated with graded discussions' assignments will be included. if \"sections\" is passed, includes the course sections that are associated with the topic, if the topic is specific to certain sections of the course. If \"sections_user_count\" is passed, then: (a) If sections were asked for and the topic is specific to certain course sections, includes the number of users in each section. (as part of the section json asked for above) (b) Else, includes at the root level the total number of users in the topic's context (group or course) that the topic applies to. If \"overrides\" is passed, the overrides for the assignment will be included Allowed values: all_dates , sections , sections_user_count , overrides"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/discussion_topics#method.discussion_topics_api.show"
+  },
+  "group_discussion_view": {
+    "category": "discussion_topics",
+    "path": "/api/v1/groups/{group_id}/discussion_topics/{topic_id}/view",
+    "summary": "Get the full topic",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/discussion_topics#method.discussion_topics_api.view"
+  },
+  "group_discussion_entries": {
+    "category": "discussion_topics",
+    "path": "/api/v1/groups/{group_id}/discussion_topics/{topic_id}/entries",
+    "summary": "List topic entries",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/discussion_topics#method.discussion_topics_api.entries"
+  },
+  "group_discussion_replies": {
+    "category": "discussion_topics",
+    "path": "/api/v1/groups/{group_id}/discussion_topics/{topic_id}/entries/{entry_id}/replies",
+    "summary": "List entry replies",
+    "query": {},
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/discussion_topics#method.discussion_topics_api.replies"
+  },
+  "group_discussion_entry_list": {
+    "category": "discussion_topics",
+    "path": "/api/v1/groups/{group_id}/discussion_topics/{topic_id}/entry_list",
+    "summary": "List entries",
+    "query": {
+      "ids[]": {
+        "type": "string",
+        "required": false,
+        "description": "A list of entry ids to retrieve. Entries will be returned in id order, smallest id first."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/discussion_topics#method.discussion_topics_api.entry_list"
+  },
+  "new_quizzes": {
+    "category": "new_quizzes",
+    "path": "/api/quiz/v1/courses/{course_id}/quizzes",
+    "summary": "List new quizzes",
+    "query": {
+      "course_id": {
+        "type": "integer",
+        "required": true,
+        "description": "no description"
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/new_quizzes#method.new_quizzes-quizzes_api.index",
+    "notes": "New Quizzes API may require instructor permissions. Students should also inspect assignments and quiz-linked module items."
+  },
+  "new_quiz": {
+    "category": "new_quizzes",
+    "path": "/api/quiz/v1/courses/{course_id}/quizzes/{assignment_id}",
+    "summary": "Get a new quiz",
+    "query": {
+      "course_id": {
+        "type": "integer",
+        "required": true,
+        "description": "no description"
+      },
+      "assignment_id": {
+        "type": "integer",
+        "required": true,
+        "description": "The id of the assignment associated with the quiz."
+      }
+    },
+    "documentation": "https://developerdocs.instructure.com/services/canvas/resources/new_quizzes#method.new_quizzes-quizzes_api.show",
+    "notes": "New Quizzes API may require instructor permissions; assignment metadata remains the student fallback."
+  }
+}
