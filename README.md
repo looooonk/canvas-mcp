@@ -152,7 +152,7 @@ log; check Codex's MCP startup status in that case. `--log-dir` overrides the lo
 ```sh
 make check                  # lint, formatting, tests, staged-secret checks
 make live                   # explicit live reads through a fresh MCP process
-uv run python scripts/verify_codex.py  # uses ChatGPT subscription; defaults to gpt-5.6-luna
+uv run python scripts/verify_codex.py  # uses ChatGPT subscription; defaults to gpt-6-luna
 make serve                  # stdio server; it waits for an MCP client, not a web browser
 ```
 
@@ -173,6 +173,14 @@ See [verification notes](docs/verification.md) for the performed checks. To debu
 authentication failure, update `.env` and restart the MCP. For missing tools, run
 `codex mcp get canvas`, then start a fresh Codex task. Permission errors should be
 investigated against the same course in Canvas; they do not imply missing data.
+
+## Validation and verification diagnostics
+
+Verification runs write their MCP diagnostics to ignored `.local/verification/logs/`,
+separately from operational `.local/logs/`. Existing historical logs are retained.
+The `--log-dir` server option selects the diagnostic directory for a launched process.
+Validation errors report schema field names and constraints without echoing input values.
+`canvas_read_file.file_id` accepts integer IDs as well as decimal strings.
 
 ## References
 

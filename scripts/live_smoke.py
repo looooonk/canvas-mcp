@@ -9,6 +9,8 @@ from pathlib import Path
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
+from canvas_mcp.diagnostics import ErrorLog
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -16,12 +18,23 @@ async def main():
     checks = []
     params = StdioServerParameters(
         command=str(ROOT / ".venv/bin/canvas-mcp"),
-        args=["--env-file", str(ROOT / ".env")],
+        args=[
+            "--env-file",
+            str(ROOT / ".env"),
+            "--log-dir",
+            str(ROOT / ".local/verification/logs"),
+        ],
         cwd="/",
         env={"PATH": "/usr/bin:/bin"},
     )
     async with stdio_client(params) as (read, write), ClientSession(read, write) as session:
         await session.initialize()
+        invalid = await session.call_tool("canvas_read_file", {"file_id": {"private-check": 1}})
+        assert invalid.isError
+        message = " ".join(c.text for c in invalid.content if c.type == "text")
+        assert "file_id" in message and "Invalid arguments" in message
+        assert "private-check" not in message
+        checks.append({"operation": "safe_validation_hints", "status": "ok"})
 
         async def read_op(operation, path=None, query=None, *, optional=False, cursor=None):
             result = await session.call_tool(
@@ -161,7 +174,7 @@ async def main():
                     optional=True,
                 )
                 result = await session.call_tool(
-                    "canvas_read_file", {"file_id": file["id"], "max_chars": 1000}
+                    "canvas_read_file", {"file_id": int(file["id"]), "max_chars": 1000}
                 )
                 if not result.isError:
                     assert result.structuredContent["total_chars"] > 0
@@ -217,4 +230,10 @@ async def main():
 
 if __name__ == "__main__":
     os.umask(0o077)
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except Exception as error:
+        ErrorLog(ROOT / ".local/verification/logs").record("live_verification_failure", error)
+        raise SystemExit(
+            "Live verification failed; inspect safe verification diagnostics."
+        ) from None

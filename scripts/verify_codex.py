@@ -9,13 +9,15 @@ import subprocess
 import tomllib
 from pathlib import Path
 
+from canvas_mcp.diagnostics import ErrorLog
+
 ROOT = Path(__file__).resolve().parents[1]
 LOCAL = ROOT / ".local"
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default="gpt-5.6-luna")
+    parser.add_argument("--model", default="gpt-6-luna")
     args = parser.parse_args()
     expected = json.loads((LOCAL / "live-expected.json").read_text())
     config = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex")) / "config.toml"
@@ -56,7 +58,7 @@ def main():
         "Report exact IDs, names, due_at (raw timestamp or null), and submission workflow_state. "
         "Read file "
         + expected["file_id"]
-        + " using canvas_read_file and include an exact short excerpt "
+        + " using canvas_read_file with file_id as a JSON integer. Include an exact short excerpt "
         "from its extracted text. Do not guess values. Return the required JSON only."
     )
     command = [
@@ -81,20 +83,28 @@ def main():
         "-c",
         'model_reasoning_effort="low"',
         "-c",
+        'web_search="disabled"',
+        "-c",
         "mcp_servers.canvas.command=" + json.dumps(canvas["command"]),
         "-c",
-        "mcp_servers.canvas.args=" + json.dumps(canvas.get("args", [])),
+        "mcp_servers.canvas.args="
+        + json.dumps(canvas.get("args", []) + ["--log-dir", str(LOCAL / "verification/logs")]),
         "--output-schema",
         str(schema),
         "--output-last-message",
         str(LOCAL / "codex-answer.json"),
-        prompt,
+        "-",
     ]
+    env = dict(os.environ)
+    for key in ("OPENAI_API_KEY", "CODEX_API_KEY", "OPENAI_BASE_URL"):
+        env.pop(key, None)
     with (
         (LOCAL / "codex-events.jsonl").open("w") as out,
         (LOCAL / "codex-stderr.log").open("w") as err,
     ):
-        result = subprocess.run(command, stdout=out, stderr=err, timeout=240)
+        result = subprocess.run(
+            command, input=prompt, text=True, stdout=out, stderr=err, env=env, timeout=300
+        )
     if result.returncode:
         raise SystemExit("Codex verification failed; see ignored .local/codex-stderr.log.")
     answer = json.loads((LOCAL / "codex-answer.json").read_text())
@@ -115,18 +125,35 @@ def main():
     ]
     if not calls or any(c.get("server") != "canvas" for c in calls):
         raise SystemExit("Expected successful Canvas MCP calls were not observed.")
-    print(
-        json.dumps(
-            {
-                "model": args.model,
-                "matched_fields": len(properties) - 1,
-                "mcp_calls": len(calls),
-                "result": "verified",
-            }
-        )
-    )
+    successful = [
+        c
+        for c in calls
+        if c.get("status") == "completed" and not (c.get("result") or {}).get("isError")
+    ]
+    required = {
+        "canvas_find_operations",
+        "canvas_describe_operation",
+        "canvas_read",
+        "canvas_read_file",
+    }
+    if not required <= {c.get("tool") for c in successful}:
+        raise SystemExit("Expected successful tool calls were not observed.")
+    report = {
+        "model": args.model,
+        "matched_fields": len(properties) - 1,
+        "mcp_calls": len(calls),
+        "result": "verified",
+    }
+    (LOCAL / "codex-summary.json").write_text(json.dumps(report, indent=2))
+    print(json.dumps(report))
 
 
 if __name__ == "__main__":
     os.umask(0o077)
-    main()
+    try:
+        main()
+    except Exception as error:
+        ErrorLog(LOCAL / "verification/logs").record("codex_verification_failure", error)
+        raise SystemExit(
+            "Codex verification failed; inspect safe verification diagnostics."
+        ) from None

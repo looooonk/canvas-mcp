@@ -27,7 +27,7 @@ working directory `/`, and a minimal PATH. This confirms startup does not depend
 an activated shell or the repository being the current directory. Registration is
 in the persistent global Codex configuration; no real machine reboot was performed.
 
-The latest run reports **27 successful checks** and **5 unavailable checks**. It
+The latest run reports **28 successful checks** and **5 unavailable checks**. It
 reads profile, all accessible named active courses, assignment details, own submission
 and feedback, modules and module items, assignment groups, sections, navigation,
 planner, calendar, announcements, enrollments, groups, inbox counts, and a PDF file.
@@ -44,8 +44,9 @@ provide module-based completion progress (or an applicable student enrollment), 
 protection is verified against Canvas source and mocked redirect-chain tests. No
 claim is made that every endpoint is usable for every course or school feature.
 
-These failures produced redacted records automatically in
-`.local/logs/canvas-mcp.jsonl`, including HTTP statuses. Raw verification artifacts
+Verification failures now produce redacted records in
+`.local/verification/logs/canvas-mcp.jsonl`, including HTTP statuses. Historical
+operational logs are retained unchanged. Raw verification artifacts
 are separate, private, ignored files under `.local/`.
 
 ## Independent Codex session
@@ -54,16 +55,15 @@ The existing ChatGPT subscription login was used for a fresh, ephemeral CLI sess
 Its Canvas command and arguments were read from the installed Codex configuration.
 Other app tools, shell tools, and subagents were disabled for the check.
 
-**GPT-5.6 Luna made 13 Canvas MCP calls**, discovered and described operations,
+**GPT-6 Luna made 13 Canvas MCP calls**, discovered and described operations,
 retrieved data, and returned eight fields that exactly matched the live MCP values:
 course count, course ID/name, assignment ID/name, raw due timestamp, profile time
 zone, and submission state. Its file excerpt also matched extracted text after
 whitespace normalization. The verifier checks these values programmatically.
 
-The installed CLI rejected GPT-6 Luna and GPT-5.4 Mini under the ChatGPT login.
-Its `model/list` reported GPT-5.6 Luna as available, which was then used successfully.
-The verification script defaults to GPT-5.6 Luna; `--model` allows a supported model
-to be chosen later. No OpenAI API key was needed.
+The September 25, 2026 check used GPT-6 Luna with the installed Canvas command,
+including an integer file ID. The script defaults to `gpt-6-luna`; `--model` can
+select another supported model. No OpenAI API key was needed.
 
 ## Reproduce
 
@@ -77,3 +77,10 @@ uv run python scripts/verify_codex.py
 Live checks are explicit and are never run by the Git hook. The hook runs offline
 checks and rejects staged private artifacts or the current Canvas token. There is
 no GitHub Actions workflow.
+
+## Diagnostic isolation
+
+Both verification scripts pass `--log-dir .local/verification/logs` as an absolute
+path to the MCP process. Deliberately invalid requests and live verification errors
+stay there; normal Codex sessions continue to use `.local/logs/`. Historical logs
+are not rewritten. Run the Codex check with `--model gpt-6-luna`.

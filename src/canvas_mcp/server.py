@@ -52,6 +52,10 @@ html_url or the Canvas resource URL. Signed download URLs are private and tempor
 READ_ONLY = ToolAnnotations(
     readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=True
 )
+FileId = (
+    Annotated[int, Field(strict=True, ge=1, le=10**30 - 1)]
+    | Annotated[str, Field(strict=True, pattern=r"^[0-9]{1,30}$")]
+)
 
 
 def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
@@ -148,7 +152,7 @@ def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
 
             result["data"] = [project(x) for x in data] if isinstance(data, list) else project(data)
         if len(json.dumps(result)) > 180000:
-            raise ToolError(
+            raise CanvasError(
                 "Result too large. Use fields, smaller query.per_page, or canvas_read_text."
             )
         return result
@@ -175,7 +179,7 @@ def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
             if not isinstance(value, str):
                 raise ValueError
         except (KeyError, IndexError, ValueError, TypeError):
-            raise ToolError("field must identify a string in the Canvas response.") from None
+            raise CanvasError("field must identify a string in the Canvas response.") from None
         return {
             "source_url": result["source_url"],
             "field": field,
@@ -184,15 +188,17 @@ def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
 
     @mcp.tool(annotations=READ_ONLY)
     async def canvas_read_file(
-        file_id: str,
+        file_id: FileId,
         ctx: Context,
         offset: Annotated[int, Field(ge=0)] = 0,
         max_chars: Annotated[int, Field(ge=1, le=60000)] = 20000,
     ) -> dict[str, Any]:
         """Read text from a Canvas file ID: PDF, DOCX, PPTX, HTML, or UTF-8 text (25 MiB max).
+        file_id accepts a positive integer or a decimal string, as returned by file/files.
         Downloads use preview mode to avoid module completion updates. Reuse next_offset until null.
         No local files are written. PDF scans/images need visual inspection outside this text tool.
         """
+        file_id = str(file_id)
         try:
             metadata, body = await read_file(ctx.request_context.lifespan_context, file_id)
             filename = metadata.get("display_name") or metadata.get("filename", "")
@@ -228,8 +234,7 @@ def main():
     parser.add_argument("--log-dir", type=Path, help="Defaults to .local/logs beside the env file")
     args = parser.parse_args()
     log_dir = args.log_dir or args.env_file.resolve().parent / ".local" / "logs"
-    logging.getLogger("httpx").setLevel(logging.WARNING)
-    logging.getLogger("pypdf").setLevel(logging.ERROR)
+    logging.disable(logging.CRITICAL)
     try:
         settings = Settings.load(args.env_file)
     except Exception as error:

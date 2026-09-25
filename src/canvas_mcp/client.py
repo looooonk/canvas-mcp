@@ -43,10 +43,22 @@ class CanvasClient:
                             await asyncio.sleep(delay)
                             continue
                         messages = {
-                            400: "Canvas rejected parameters or the operation is not applicable.",
+                            400: (
+                                "Canvas rejected parameters or the operation is not applicable. "
+                                "Inspect canvas_describe_operation before retrying; course "
+                                "progress requires an applicable module-based course/enrollment."
+                            ),
                             401: "Canvas authentication failed. Check the local API token.",
-                            403: "Canvas denied access. Feature may be unavailable to students.",
-                            404: "Canvas resource not found or not available to this account.",
+                            403: (
+                                "Canvas denied access. Feature may be unavailable to students. "
+                                "Do not treat this as empty data or repeat the same request. "
+                                "Inspect accessible assignments/modules for related content."
+                            ),
+                            404: (
+                                "Canvas resource not found or not available to this account. "
+                                "Check IDs against discovered records; inspect accessible "
+                                "assignments/modules if pages or quizzes are unavailable."
+                            ),
                             429: "Canvas rate limit reached. Try again later.",
                         }
                         if response.status_code != 200:

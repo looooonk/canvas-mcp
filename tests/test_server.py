@@ -2,6 +2,7 @@ import json
 import os
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from mcp import ClientSession, StdioServerParameters
@@ -12,6 +13,37 @@ from canvas_mcp.catalog import CanvasError
 from canvas_mcp.config import Settings
 from canvas_mcp.diagnostics import ErrorLog
 from canvas_mcp.server import create_server
+
+
+@pytest.mark.parametrize("file_id", [123, "123"])
+async def test_file_ids_are_normalized_before_read(tmp_path, monkeypatch, file_id):
+    calls = []
+
+    async def read_file(client, identifier):
+        calls.append(identifier)
+        return {"filename": "sample.txt", "content-type": "text/plain"}, b"example text"
+
+    monkeypatch.setattr("canvas_mcp.server.read_file", read_file)
+    server = create_server(Settings("https://canvas.example.edu", "secret"), tmp_path)
+    monkeypatch.setattr(
+        server,
+        "get_context",
+        lambda: SimpleNamespace(request_context=SimpleNamespace(lifespan_context=None)),
+    )
+    _, result = await server.call_tool("canvas_read_file", {"file_id": file_id})
+    assert calls == ["123"]
+    assert result["file_id"] == "123" and result["text"] == "example text"
+
+
+@pytest.mark.parametrize("file_id", [True, False, 1.5, -1, 0, 10**30, "../123", "1\n", {}])
+async def test_invalid_file_ids_never_read(tmp_path, monkeypatch, file_id):
+    async def unexpected_read(*args):
+        pytest.fail("Invalid file IDs must be rejected before reading")
+
+    monkeypatch.setattr("canvas_mcp.server.read_file", unexpected_read)
+    server = create_server(Settings("https://canvas.example.edu", "secret"), tmp_path)
+    with pytest.raises(ToolError, match="file_id"):
+        await server.call_tool("canvas_read_file", {"file_id": file_id})
 
 
 async def test_all_tools_are_read_only_and_errors_are_logged(tmp_path):
