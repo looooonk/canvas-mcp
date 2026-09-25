@@ -5,7 +5,7 @@ No token, course names, grades, messages, or file contents are included here.
 
 ## Offline and protocol checks
 
-`make check` passes **198 tests**, plus lint and formatting checks. Tests cover:
+`make check` passes **212 tests**, plus lint and formatting checks. Tests cover:
 
 - Every catalog route's path construction and prohibited query keys.
 - Traversal, route injection, method overrides, impersonation, and token parameters.
