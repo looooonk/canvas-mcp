@@ -369,3 +369,8 @@ Image/PDF reading adds no upstream route or query: it shares `read_file` and its
 preview-forcing redirect validation. Rendering uses Pillow/PDFium in a credential-free,
 resource-bounded child process. Synthetic tests cover output bounds, selected pages,
 invalid files and out-of-range pages.
+
+The `changes` operation is local snapshot reconciliation exposed through the existing read
+wrapper; it is deliberately absent from the HTTP route catalog. Its arguments are validated
+before authorization and campus reads. It delegates only to the same reviewed adapters as
+the dedicated feed tool, adding no upstream routes or methods. See `docs/change-feed.md`.

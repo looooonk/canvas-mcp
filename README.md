@@ -206,3 +206,7 @@ Pages errors now distinguish invalid parameters (400), permission denial (403), 
 missing/unavailable resources (404). A disabled Pages tab can produce an upstream 404;
 this is not an empty page list or a reason to bypass course access. `page_id:123` is
 supported as an unambiguous page identifier when a numeric slug would conflict.
+
+Clients with cached tool lists can use `canvas_read(operation="changes",
+path={"course_id":"123","feed":{"budget":1}})`. Discover/describe the `changes`
+operation for baseline, continuation and checkpoint semantics. The complete feed is in `data`.

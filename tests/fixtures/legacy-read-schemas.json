@@ -1,0 +1,104 @@
+{
+  "canvas_find_operations": {
+    "properties": {
+      "search": {
+        "default": "",
+        "title": "Search",
+        "type": "string"
+      },
+      "category": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Category"
+      }
+    },
+    "title": "canvas_find_operationsArguments",
+    "type": "object"
+  },
+  "canvas_describe_operation": {
+    "properties": {
+      "operation": {
+        "title": "Operation",
+        "type": "string"
+      }
+    },
+    "required": [
+      "operation"
+    ],
+    "title": "canvas_describe_operationArguments",
+    "type": "object"
+  },
+  "canvas_read": {
+    "properties": {
+      "operation": {
+        "title": "Operation",
+        "type": "string"
+      },
+      "path": {
+        "anyOf": [
+          {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Path"
+      },
+      "query": {
+        "anyOf": [
+          {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Query"
+      },
+      "cursor": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Cursor"
+      },
+      "fields": {
+        "anyOf": [
+          {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Fields"
+      }
+    },
+    "required": [
+      "operation"
+    ],
+    "title": "canvas_readArguments",
+    "type": "object"
+  }
+}

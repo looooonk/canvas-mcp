@@ -12,6 +12,7 @@ from mcp.server.fastmcp.exceptions import ToolError
 from mcp.types import ImageContent, TextContent, ToolAnnotations
 from pydantic import Field
 
+from canvas_mcp import feed_operation
 from canvas_mcp.catalog import OPERATIONS, CanvasError, describe
 from canvas_mcp.changefeed import ChangeFeed, FeedError, digest
 from canvas_mcp.changes import CanvasChanges
@@ -58,6 +59,11 @@ GUIDE += (
     "\nUse canvas_changes(course_id) to establish a baseline; follow "
     "continuation, then save next_cursor. Coverage is explicit and "
     "incomplete reads never imply deletion. See docs/change-feed.md.\n"
+)
+GUIDE += (
+    '\nExisting clients can use canvas_read(operation="changes", '
+    'path={"course_id":"123","feed":{"budget":1}}). Describe changes for cursor semantics. '
+    "The full feed is returned in data; do not apply API pagination or field projections.\n"
 )
 READ_ONLY = ToolAnnotations(
     readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=True
@@ -118,7 +124,7 @@ def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
                 ctx.request_context.lifespan_context, course_id, cursor, continuation, limit, budget
             )
         except FeedError as error:
-            raise CanvasError(str(error)) from error
+            raise CanvasError(str(error)) from None
 
     @mcp.tool(annotations=READ_ONLY)
     def canvas_find_operations(
@@ -140,7 +146,10 @@ def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
         terms = search.lower().split()
         terms += [t for word in terms.copy() for t in aliases.get(word, "").split()]
         matches = []
-        for name, op in OPERATIONS.items():
+        catalog = OPERATIONS | {
+            "changes": {"category": "changes", "summary": feed_operation.SUMMARY}
+        }
+        for name, op in catalog.items():
             if category and category != op["category"]:
                 continue
             haystack = f"{name} {op['category']} {op['summary']} {op.get('notes', '')}".lower()
@@ -156,7 +165,7 @@ def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
         return {
             "operations": [x[1] for x in matches],
             "count": len(matches),
-            "categories": sorted({op["category"] for op in OPERATIONS.values()}),
+            "categories": sorted({op["category"] for op in catalog.values()}),
         }
 
     @mcp.tool(annotations=READ_ONLY)
@@ -164,6 +173,8 @@ def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
         """Get an operation's path parameters, allowed query keys, types, notes, and API docs.
         No Canvas request is made. Use the listed parameter names exactly; arrays use [] suffixes.
         """
+        if operation == "changes":
+            return feed_operation.describe("canvas", CanvasChanges.coverage)
         try:
             return describe(operation)
         except CanvasError as error:
@@ -185,6 +196,16 @@ def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
         Results over 180,000 characters require fewer per_page items or fields; long text can be
         read with canvas_read_text. No arbitrary requests or state-changing parameters are allowed.
         """
+        if operation == "changes":
+            try:
+                if query not in (None, {}) or cursor is not None or fields is not None:
+                    raise FeedError(
+                        "changes options belong in path.feed; omit query/cursor/fields."
+                    )
+                result = await canvas_changes(ctx=ctx, **feed_operation.arguments(path))
+                return feed_operation.envelope(result)
+            except FeedError as error:
+                raise CanvasError(str(error)) from None
         result = await fetch(ctx, operation, path, query, cursor)
         if fields:
             data = result["data"]
@@ -291,7 +312,10 @@ def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
 
     @mcp.resource("canvas://operations", mime_type="application/json")
     def operations() -> str:
-        return json.dumps({name: op["summary"] for name, op in OPERATIONS.items()})
+        return json.dumps(
+            {name: op["summary"] for name, op in OPERATIONS.items()}
+            | {"changes": feed_operation.SUMMARY}
+        )
 
     return mcp
 
