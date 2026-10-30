@@ -39,7 +39,9 @@ def path_for(name: str, path: dict) -> str:
             key == "user_id"
             or (key == "id" and name in {"user", "user_colors", "graded_submissions"})
         )
-        is_slug = key == "url_or_id" and re.fullmatch(r"[\w-]{1,255}", value)
+        is_slug = key == "url_or_id" and re.fullmatch(
+            r"(?:[\w-]{1,255}|page_id:[1-9][0-9]{0,29})", value
+        )
         if not (re.fullmatch(r"[0-9]{1,30}", value) or is_self or is_slug):
             raise CanvasError(f"Invalid {key}; use a numeric ID, 'self' for users, or a page slug.")
         encoded[key] = quote(value, safe="")

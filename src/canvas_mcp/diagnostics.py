@@ -13,6 +13,8 @@ from pydantic import ValidationError
 from canvas_mcp.catalog import OPERATIONS, CanvasError
 
 TOOL_NAMES = {
+    "canvas_changes",
+    "canvas_read_image",
     "canvas_find_operations",
     "canvas_describe_operation",
     "canvas_read",

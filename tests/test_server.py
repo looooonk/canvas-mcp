@@ -49,7 +49,7 @@ async def test_invalid_file_ids_never_read(tmp_path, monkeypatch, file_id):
 async def test_all_tools_are_read_only_and_errors_are_logged(tmp_path):
     server = create_server(Settings("https://canvas.example.edu", "private-token"), tmp_path)
     tools = await server.list_tools()
-    assert len(tools) == 5
+    assert len(tools) == 7
     assert all(t.annotations.readOnlyHint and not t.annotations.destructiveHint for t in tools)
     with pytest.raises(ToolError):
         await server.call_tool("canvas_describe_operation", {"operation": "private-token"})
@@ -94,7 +94,7 @@ async def test_real_stdio_handshake_discovery_and_rejection(tmp_path):
         init = await session.initialize()
         assert "Read-only Canvas" in init.instructions
         listed = await session.list_tools()
-        assert len(listed.tools) == 5
+        assert len(listed.tools) == 7
         result = await session.call_tool("canvas_describe_operation", {"operation": "conversation"})
         assert not result.isError
         assert result.structuredContent["fixed_query"] == {"auto_mark_as_read": False}

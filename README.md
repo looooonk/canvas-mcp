@@ -190,3 +190,19 @@ Validation errors report schema field names and constraints without echoing inpu
 - [Canvas file controller and preview behavior](https://github.com/instructure/canvas-lms/blob/master/app/controllers/files_controller.rb)
 - [Codex MCP configuration](https://learn.chatgpt.com/docs/extend/mcp?surface=cli)
 - [Official MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)
+
+## Visual files and course changes
+
+Use `canvas_read_image(file_id="123", page=2)` to render one selected PDF page or
+`page=1` for an image. It uses the existing authorized file-ID lookup and preview-only
+downloads. Limits: 25 MiB input, 300 PDF pages, 2000 pixels per output side, a 25-second
+worker timeout and 512 MiB resident memory. The worker receives no credentials.
+
+Use `canvas_changes(course_id="123")` to capture a baseline, follow `continuation`,
+then save `next_cursor` for your next check. See [change-feed.md](docs/change-feed.md)
+for the shared schema, exact scope, examples and partial-failure behavior.
+
+Pages errors now distinguish invalid parameters (400), permission denial (403), and
+missing/unavailable resources (404). A disabled Pages tab can produce an upstream 404;
+this is not an empty page list or a reason to bypass course access. `page_id:123` is
+supported as an unambiguous page identifier when a numeric slug would conflict.

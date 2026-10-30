@@ -84,3 +84,13 @@ Both verification scripts pass `--log-dir .local/verification/logs` as an absolu
 path to the MCP process. Deliberately invalid requests and live verification errors
 stay there; normal Codex sessions continue to use `.local/logs/`. Historical logs
 are not rewritten. Run the Codex check with `--model gpt-6-luna`.
+
+## Version 0.2.0 validation, October 30, 2026
+
+Ruff check and format checks passed; the offline synthetic suite passed 231 tests.
+New tests cover baseline/resume/replay, change pagination, scope/role/expiry isolation,
+partial failure retention, deadline updates, noise normalization and read-only boundaries.
+Synthetic image and selected PDF-page rendering passed, including size and range limits.
+The supplied Pages example returned an upstream 404; no permission bypass was attempted.
+Deployment and Mac session results are reported separately; these test results alone
+do not establish a deployed cloud version or a physical Mac-off test.

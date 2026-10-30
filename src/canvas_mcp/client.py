@@ -50,12 +50,15 @@ class CanvasClient:
                             ),
                             401: "Canvas authentication failed. Check the local API token.",
                             403: (
-                                "Canvas denied access. Feature may be unavailable to students. "
+                                "Canvas HTTP 403: permission denied. "
+                                "Feature may be unavailable to students. "
                                 "Do not treat this as empty data or repeat the same request. "
                                 "Inspect accessible assignments/modules for related content."
                             ),
                             404: (
-                                "Canvas resource not found or not available to this account. "
+                                "Canvas HTTP 404: resource not found or unavailable "
+                                "to this account. "
+                                "For Pages, a disabled course Pages tab can cause this response. "
                                 "Check IDs against discovered records; inspect accessible "
                                 "assignments/modules if pages or quizzes are unavailable."
                             ),
@@ -67,7 +70,13 @@ class CanvasClient:
                                     response.status_code,
                                     f"Canvas HTTP {response.status_code}; redirects blocked.",
                                 ),
-                                code="http_error",
+                                code={
+                                    400: "invalid_parameters",
+                                    401: "authentication_failed",
+                                    403: "permission_denied",
+                                    404: "not_found_or_unavailable",
+                                    429: "rate_limited",
+                                }.get(response.status_code, "upstream_error"),
                                 http_status=response.status_code,
                             )
                         if "json" not in response.headers.get("content-type", "").lower():

@@ -1,6 +1,6 @@
 [project]
 name = "canvas-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "Local, strictly read-only Canvas LMS MCP server for Codex"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -10,6 +10,9 @@ dependencies = [
   "python-dotenv>=1.1,<2",
   "beautifulsoup4>=4.13,<5",
   "pypdf>=6,<7",
+  "pillow>=11,<13",
+  "pypdfium2>=5,<6",
+  "psutil>=7,<9",
 ]
 
 [project.scripts]

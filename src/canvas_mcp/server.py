@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import base64
 import json
 import logging
 from contextlib import asynccontextmanager
@@ -8,15 +9,18 @@ from typing import Annotated, Any
 
 from mcp.server.fastmcp import Context, FastMCP
 from mcp.server.fastmcp.exceptions import ToolError
-from mcp.types import ToolAnnotations
+from mcp.types import ImageContent, TextContent, ToolAnnotations
 from pydantic import Field
 
 from canvas_mcp.catalog import OPERATIONS, CanvasError, describe
+from canvas_mcp.changefeed import ChangeFeed, FeedError, digest
+from canvas_mcp.changes import CanvasChanges
 from canvas_mcp.client import CanvasClient
 from canvas_mcp.config import Settings
 from canvas_mcp.content import extract_text, html_text, text_slice
 from canvas_mcp.diagnostics import ErrorLog, LoggedMCP
 from canvas_mcp.files import read_file
+from canvas_mcp.images import render_image
 
 GUIDE = """Read-only Canvas LMS. Discover operations with canvas_find_operations, inspect parameters
 with canvas_describe_operation, then use canvas_read. Use user_id='self' for your profile,
@@ -42,19 +46,25 @@ arrays; unknown parameters are rejected. fields selects top-level fields to keep
 For long body/description/syllabus_body fields, use canvas_read_text with offsets; it preserves
 HTML links. canvas_read_file extracts PDF, DOCX, PPTX, HTML, and UTF-8 text using preview downloads
 that do not intentionally advance module completion. Binary/media file metadata remains available
-through file/files. No OCR, quiz-taking, submissions, messaging, edits, external LTI launches,
+through file/files. Use canvas_read_image for images and PDF pages. No OCR, quiz-taking,
+submissions, messaging, edits, external LTI launches,
 GraphQL, arbitrary URLs, or writes are supported. Canvas may still log ordinary API access.
 
 403/404 can mean permissions, locked content, or an unavailable feature. New Quizzes and Smart
 Search may be unavailable to students; inspect assignments/pages/modules instead. Cite returned
 html_url or the Canvas resource URL. Signed download URLs are private and temporary.
 """
+GUIDE += (
+    "\nUse canvas_changes(course_id) to establish a baseline; follow "
+    "continuation, then save next_cursor. Coverage is explicit and "
+    "incomplete reads never imply deletion. See docs/change-feed.md.\n"
+)
 READ_ONLY = ToolAnnotations(
     readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=True
 )
 FileId = (
     Annotated[int, Field(strict=True, ge=1, le=10**30 - 1)]
-    | Annotated[str, Field(strict=True, pattern=r"^[0-9]{1,30}$")]
+    | Annotated[str, Field(strict=True, pattern=r"^[1-9][0-9]{0,29}$")]
 )
 
 
@@ -67,7 +77,8 @@ def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
         finally:
             await client.close()
 
-    error_log = ErrorLog(log_dir or Path(__file__).resolve().parents[2] / ".local" / "logs")
+    log_dir = log_dir or Path(__file__).resolve().parents[2] / ".local" / "logs"
+    error_log = ErrorLog(log_dir)
     mcp = LoggedMCP(
         "canvas", instructions=GUIDE, lifespan=lifespan, log_level="WARNING", error_log=error_log
     )
@@ -77,6 +88,37 @@ def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
             return await ctx.request_context.lifespan_context.read(operation, path, query, cursor)
         except CanvasError as error:
             raise ToolError(str(error)) from error
+
+    feed = ChangeFeed(
+        log_dir / "changes", digest([settings.base_url, settings.token]), CanvasChanges()
+    )
+
+    @mcp.tool(annotations=READ_ONLY)
+    async def canvas_changes(
+        course_id: Annotated[str, Field(strict=True, pattern=r"^[1-9][0-9]{0,18}$")]
+        | Annotated[int, Field(strict=True, ge=1, le=10**19 - 1)],
+        ctx: Context,
+        cursor: str | None = None,
+        continuation: str | None = None,
+        limit: Annotated[int, Field(strict=True, ge=1, le=100)] = 30,
+        budget: Annotated[int, Field(strict=True, ge=1, le=20)] = 10,
+    ) -> dict[str, Any]:
+        """Observe meaningful changes in one course using a private local snapshot.
+
+        First call: omit cursors to establish a baseline (no historical alerts). Follow
+        continuation until null; only then save next_cursor for your next check. A continuation
+        resumes a bounded scan or pages a fixed result. Never pass API pagination cursors here.
+        Each check fully reconciles supported sources. Check coverage.failures before claiming
+        completeness. Absence never means deletion; new records mean newly observed, not created.
+        Cursors expire after seven days and are scoped to account, course, role, and this server.
+        budget bounds read tasks, which may make several upstream GETs. Only local cache is written.
+        """
+        try:
+            return await feed.read(
+                ctx.request_context.lifespan_context, course_id, cursor, continuation, limit, budget
+            )
+        except FeedError as error:
+            raise CanvasError(str(error)) from error
 
     @mcp.tool(annotations=READ_ONLY)
     def canvas_find_operations(
@@ -196,7 +238,7 @@ def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
         """Read text from a Canvas file ID: PDF, DOCX, PPTX, HTML, or UTF-8 text (25 MiB max).
         file_id accepts a positive integer or a decimal string, as returned by file/files.
         Downloads use preview mode to avoid module completion updates. Reuse next_offset until null.
-        No local files are written. PDF scans/images need visual inspection outside this text tool.
+        No local files are written. Use canvas_read_image for images or selected PDF pages.
         """
         file_id = str(file_id)
         try:
@@ -214,6 +256,34 @@ def create_server(settings: Settings, log_dir: Path | None = None) -> FastMCP:
             }
         except CanvasError as error:
             raise ToolError(str(error)) from error
+
+    @mcp.tool(annotations=READ_ONLY)
+    async def canvas_read_image(
+        file_id: FileId,
+        ctx: Context,
+        page: Annotated[int, Field(strict=True, ge=1, le=300)] = 1,
+    ) -> list[TextContent | ImageContent]:
+        """Visually read an authorized image or one selected PDF page (1-based, max 300).
+
+        Use a file ID discovered through file/files. Max download 25 MiB; output at most 2000px
+        per side. Images use page=1. PDF annotations/forms are rendered; no scripts execute.
+        Uses the same permission checks and preview-only downloads as canvas_read_file.
+        """
+        metadata, body = await read_file(ctx.request_context.lifespan_context, str(file_id))
+        output = await render_image(body, page)
+        info = {
+            "file_id": str(file_id),
+            "page": page,
+            "filename": metadata.get("display_name") or metadata.get("filename"),
+            "source_url": f"{settings.base_url}/files/{file_id}",
+            "untrusted_content": True,
+        }
+        return [
+            TextContent(type="text", text=json.dumps(info)),
+            ImageContent(
+                type="image", mimeType="image/png", data=base64.b64encode(output).decode()
+            ),
+        ]
 
     @mcp.resource("canvas://guide", mime_type="text/plain")
     def guide() -> str:

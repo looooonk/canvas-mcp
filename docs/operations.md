@@ -354,3 +354,18 @@ Canvas may deny individual features based on permissions or school configuration
 | `course_nicknames` | `/api/v1/users/self/course_nicknames` |
 | `user_colors` | `/api/v1/users/{id}/colors` |
 
+
+## Pages and visual file review, October 30, 2026
+
+The [official Pages API](https://developerdocs.instructure.com/services/canvas/resources/pages)
+confirms the existing list route and the `page_id:123` disambiguation syntax.
+[WikiPagesApiController#index](https://github.com/instructure/canvas-lms/blob/master/app/controllers/wiki_pages_api_controller.rb)
+requires both wiki read permission and the Pages tab to be enabled. The supplied course
+Pages example returned HTTP 404 in an explicit read-only check. No route defect was found
+in listing; errors now preserve specific safe status categories. Disabled/unavailable
+Pages are not bypassed using hidden routes.
+
+Image/PDF reading adds no upstream route or query: it shares `read_file` and its
+preview-forcing redirect validation. Rendering uses Pillow/PDFium in a credential-free,
+resource-bounded child process. Synthetic tests cover output bounds, selected pages,
+invalid files and out-of-range pages.
